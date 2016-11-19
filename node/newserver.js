@@ -55,7 +55,8 @@ app.get("/", function(req, res) {
 
 
 app.post("/request_challenge", function(req, res) {
-  console.log("route /request_challenge was contacted");
+  var token = req.query.token;
+  console.log("route /request_challenge was contacted with token: " + token);
   function userMustEnterPassword() {
     //TODO: send message saying 'you must enter your password'
   };

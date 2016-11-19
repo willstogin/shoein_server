@@ -5,13 +5,14 @@ import java.net.*;
 public class requestChallengeTester {
 
   public static void main(String[] args) {
+
+    String token = args[0];// first argument should be the token
     try {
       StringBuilder result = new StringBuilder();
-      String urlString =  new String("http://localhost:8080/request_challenge"+"?uid=armbar&perm_pk=armbar&temp_pk=armbar");
+      String urlString =  new String("http://localhost:8080/request_challenge"+"?uid=armbar&perm_pk=armbar&temp_pk=armbar&token="+token);
       URL url = new URL(urlString);
       HttpURLConnection conn = (HttpURLConnection) url.openConnection();
       conn.setRequestMethod("POST");
-      String urlParameters = "uid=armbar&cn=&locale=&caller=&num=12345";
 
 
 

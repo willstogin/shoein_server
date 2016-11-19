@@ -97,7 +97,8 @@ app.post("/response", function(req, res) {
 
 
 app.get("/newClient", function(req, res) {
-
+  console.log("route /newClient was contacted");
+  res.send(socket_manager.getUniqueToken());
 });
 
 app.get("/newSession/:token", function(req, res) {

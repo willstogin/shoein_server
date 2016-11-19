@@ -39,8 +39,10 @@ void loop() {
     Serial.print("Done\n");
     return;
   } else {
-
-
-  }
+    char b = 0;
+    for (int i=0; i<8; i++) {
+      b = getBit(b);
+    }
+    Serial.print("B is " + b + "\n");
   }
 }

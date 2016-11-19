@@ -1,0 +1,46 @@
+
+int inClock = 8;
+int inPin = 9;
+int outClock = 10;
+int outPin = 11;
+
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+  pinMode(outPin, OUTPUT);
+  pinMode(inPin, INPUT);
+  pinMode(inClock, INPUT);
+  pinMode(outClock, OUTPUT);
+}
+
+// Reads the pin and writes the bit to the rightmost bit of char, returning result
+char getBit(char byte) {
+  while(digitalRead(inClock) == HIGH);
+  return (byte << 1) + ((digitalRead(inPin) == HIGH) ? 1 : 0);  
+}
+
+// Consumes the leftmost bit and returns the resulting char
+char sendBit(char byte) {
+  digitalWrite(outClock, HIGH);
+  digitalWrite(outPin, ((byte & 0x80) ? HIGH : LOW));
+  delayMicroseconds(100); // Corresponds to 9600 baud
+  digitalWrite(outClock, LOW);
+  return byte << 1;
+}
+
+char writer = 1;
+void loop() {
+  if (writer) {
+    char a = 0x73;
+    while(a) {
+      Serial.print("Sending...\n");
+      a = sendBit(a);
+    }
+    Serial.print("Done\n");
+    return;
+  } else {
+
+
+  }
+  }
+}

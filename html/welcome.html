@@ -3,16 +3,12 @@
 <body>
 
 
-<script>
-function logout() {
-    console.log("logout pressed");
-}
-</script>
 <h1>Welcome</h1>
 
 <p>You are logged in.</p>
-<button type="button" onclick="logout()">Log Out</button>
-
+<form  action = "/logout" method = "post">
+<button type = "submit"> Log Out </button>
+</form>
 
 </body>
 </html>

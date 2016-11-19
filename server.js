@@ -101,7 +101,9 @@ function handleRequest(request, response){
                     console.error("Wrong data received");
                 }
         });
-
+    } else if (request.method === 'POST' && request.url === '/logout') {
+        var readStream = fileSystem.createReadStream("html/login.html");
+        readStream.pipe(response);
     } else if (request.method === 'GET' && request.url === '/signup') {
         // Display signup page
         var readStream = fileSystem.createReadStream("html/signup.html");

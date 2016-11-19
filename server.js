@@ -42,26 +42,31 @@ function handleRequest(request, response){
              var formData = qs.parse(requestBody);
              if (formData["username"] != undefined
                 && formData["password"] != undefined) {
-                    // Check if user exists
-                    var arrayLength = users.length;
-                    var founduser = new User("","");
-                    for (var i=0; i<arrayLength; i++) {
-                        if (user[i].username == formData["username"]) {
-                            founduser = user[i];
-                            break;
-                        }
-                    }
-                    if (founduser.username != formData["username"]) {
-                        var user = new User(formData["username"], formData["password"]);
-                        users.push(user);
-                        console.log("Added user " + user.username
-                            + " with password " + user.password);
-                    } else {
-                        console.error("Duplicate user detected");
-                    }
+                  // Check if user exists
+                  var arrayLength = users.length;
+                  var founduser = new User("","");
+                  for (var i=0; i<arrayLength; i++) {
+                      if (user[i].username == formData["username"]) {
+                          founduser = user[i];
+                          break;
+                      }
+                  }
+                  if (founduser.username != formData["username"]) {
+                      var user = new User(formData["username"], formData["password"]);
+                      users.push(user);
+                      console.log("Added user " + user.username
+                          + " with password " + user.password);
+                  } else {
+                      console.error("Duplicate user detected");
+                  }
 
-                }
+              }
         });
+
+        response.writeHead(200, {
+            'Location': '/welcome'
+        });
+        response.end();
 
     } else if (request.method === 'GET' && request.url === '/signup') {
         // Display signup page
@@ -71,6 +76,10 @@ function handleRequest(request, response){
         // Display login page
         var readStream = fileSystem.createReadStream("html/login.html");
         readStream.pipe(response);
+    } else if (equest.method === 'GET' && request.url === '/welcome') {
+        // Display welcome page
+        var readStream = fileSystem.createReadStream("html/welcome.html");
+       readStream.pipe(response);
     } else {
         // Display home page
         var readStream = fileSystem.createReadStream("html/home.html");

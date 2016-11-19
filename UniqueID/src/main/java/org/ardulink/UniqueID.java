@@ -17,14 +17,6 @@ limitations under the License.
 
 package org.ardulink;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.ardulink.core.convenience.Links.setChoiceValues;
-import static org.ardulink.util.Preconditions.checkNotNull;
-
-import java.io.IOException;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-
 import org.ardulink.core.Link;
 import org.ardulink.core.events.RplyEvent;
 import org.ardulink.core.linkmanager.LinkManager;
@@ -35,6 +27,14 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.ardulink.core.convenience.Links.setChoiceValues;
+import static org.ardulink.util.Preconditions.checkNotNull;
 
 /**
  * [ardulinktitle] [ardulinkversion]
@@ -92,7 +92,8 @@ public class UniqueID {
 					.waitForResponse(sendUniqueIdCustomMsg(link));
 			
 			if(rplyEvent.isOk()) {
-				String uniqueID = checkNotNull(rplyEvent.getParameterValue(UNIQUE_ID_PARAMETER_VALUE_KEY), "Reply doesn't contain UniqueID").toString();
+				String uniqueID = checkNotNull(rplyEvent.getParameterValue(UNIQUE_ID_PARAMETER_VALUE_KEY),
+						"Reply doesn't contain UniqueID").toString();
 
 				if(sugestedUniqueID.equals(uniqueID)) {
 					logger.info("Device hadn't an ID. Now it is set to: " + uniqueID);

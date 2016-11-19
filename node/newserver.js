@@ -56,7 +56,8 @@ app.get("/", function(req, res) {
 
 // from java client
 app.post("/request_challenge", function(req, res) {
-  console.log("route /request_challenge was contacted");
+  var token = req.query.token;
+  console.log("route /request_challenge was contacted with token: " + token);
   function userMustEnterPassword() {
     //TODO: send message saying 'you must enter your password'
   };
@@ -99,7 +100,8 @@ app.post("/response", function(req, res) {
 
 // from java client
 app.get("/newClient", function(req, res) {
-
+  console.log("route /newClient was contacted");
+  res.send(socket_manager.getUniqueToken());
 });
 
 app.get("/newSession/:token", function(req, res) {

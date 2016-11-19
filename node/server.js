@@ -4,6 +4,9 @@ var http = require('http');
 var fileSystem = require('fs');
 var path = require('path');
 var qs = require('querystring');
+//npm install pug
+const pug = require('pug');
+
 
 //Lets define a port we want to listen to
 const PORT=8080;
@@ -15,6 +18,7 @@ class User {
 }
 
 var users = [];
+var currentUser = null; // There can only be one user, because we don't have a means of independently validating a user session (no cookies)
 
 // Finds the user with username
 // Returns User with empty name and password on failure
@@ -56,11 +60,21 @@ function handleRequest(request, response){
                 && password != undefined) {
                     // Check if user exists
                     var founduser = findUser(username);
-                    if (founduser.name == username
-                        && founduser.password == password) {
+                    if (founduser.name == username && founduser.password == password) {
+                        currentUser = founduser;
                         // Log user in
-                        var readStream = fileSystem.createReadStream("html/welcome.html");
-                        readStream.pipe(response);
+                        const compiledWelcome =  pug.compileFile('html/welcome.pug');
+                        console.log("writing to temp/welcome1.html with currentUser " + currentUser.name);
+                        fileSystem.writeFile('temp/welcome1.html', compiledWelcome({user: currentUser.name}), (err) => {
+                          if (err) {
+                            throw err
+                            console.log("writing to temp/welcome1.html failed with error" + err);
+                          } else {
+                            var readStream = fileSystem.createReadStream("temp/welcome1.html");
+                            readStream.pipe(response);
+                          }
+                        });
+
                     } else {
                         var readStream = fileSystem.createReadStream("html/loginerr.html");
                         readStream.pipe(response);
@@ -89,8 +103,18 @@ function handleRequest(request, response){
                         users.push(user);
                         console.log("Added user " + user.name
                             + " with password " + user.password);
-                        var readStream = fileSystem.createReadStream("html/welcome.html");
-                        readStream.pipe(response);
+                        currentUser = user;
+                        const compiledWelcome =  pug.compileFile('html/welcome.pug');
+                        console.log("writing to temp/welcome1.html with currentUser " + currentUser.name);
+                        fileSystem.writeFile('temp/welcome1.html', compiledWelcome({user: currentUser.name}), (err) => {
+                          if (err) {
+                            throw err
+                            console.log("writing to temp/welcome1.html failed with error" + err);
+                          } else {
+                            var readStream = fileSystem.createReadStream("temp/welcome1.html");
+                            readStream.pipe(response);
+                          }
+                        });
                     } else {
                         console.error("Duplicate user detected");
                         var readStream = fileSystem.createReadStream("html/signuperr.html");
@@ -114,12 +138,32 @@ function handleRequest(request, response){
         readStream.pipe(response);
     } else if (request.method === 'GET' && request.url === '/welcome') {
         // Display welcome page
-        var readStream = fileSystem.createReadStream("html/welcome.html");
-       readStream.pipe(response);
+        const compiledWelcome =  pug.compileFile('html/welcome.pug');
+        if ( currentUser != null ) {
+          console.log("writing to temp/welcome1.html with currentUser " + currentUser.name);
+          fileSystem.writeFile('temp/welcome1.html', compiledWelcome({user: currentUser.name}), (err) => {
+            if (err) {
+              throw err
+              console.log("writing to temp/welcome1.html failed with error" + err);
+            } else {
+              var readStream = fileSystem.createReadStream("temp/welcome1.html");
+              readStream.pipe(response);
+            }
+          });
+        } else {
+          // if there isn't a current user, redirect to the login page
+          var readStream = fileSystem.createReadStream("html/login.html");
+          readStream.pipe(response);
+        }
+
     } else if (request.method === 'GET' && request.url === '/styles.css') {
-        // Display welcome page
+        // Display styles
         var readStream = fileSystem.createReadStream("html/styles.css");
        readStream.pipe(response);
+    } else if (request.method === 'GET' && request.url === '/zombo.ogg') {
+        // stupid audio
+        var readStream = fileSystem.createReadStream("html/zombo.ogg");
+        readStream.pipe(response);
     } else {
         // Display login/home page
         console.log(request.url + " was requested, but could not find the proper file")

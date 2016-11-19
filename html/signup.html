@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <html>
+
+  <head>
+    <link rel="stylesheet" type="text/css" href="/styles.css">
+  </head>
 <body>
 
 
@@ -7,20 +11,22 @@
 function signup(username, password) {
     console.log("Your in has been logged, BIATCH");
 }
+
 </script>
-<h1></h1>
 
-<p>You don't have an account yet, please create one please.</p>
-<form action = "/signup" method = "post">
+  <div class="login-page">
+    <div class="form">
+    <h3>You don't have an account, please create one</h3>
+      <form  action = "/singup" method = "post">
 
-Username: <br>
-<input type = "text" name = "username"> <br>
-Password: <br>
-<input type = "text" name = "password"> <br><br>
-<button type = "submit"> Signup </button>
-
-</form>
-
+        Username: <br>
+        <input type = "text" name = "username"> <br>
+        Password: <br>
+        <input type = "password" name = "password"> <br><br>
+        <button type = "submit"> Sign Up </button>
+      </form>
+    </div>
+  </div>
 
 </body>
 </html>

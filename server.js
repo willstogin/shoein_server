@@ -4,22 +4,34 @@ var http = require('http');
 //Lets define a port we want to listen to
 const PORT=8080;
 
-const LOGIN_PAGE = "You are not shoed in";
+const NOT_LOGGED_IN = "You are not shoed in"
+const LOGIN_PAGE = "Please shoe in";
 const SIGNUP_PAGE = "Sign up for our service here";
 const LOGGED_IN = "Welcome! you are now shod in";
 
+
+
 //We need a function which handles requests and send response
 function handleRequest(request, response){
-    response.end('It Works!! Path Hit: ' + request.url);
 
+    // Requests:
+    // * POST login information
+    // * * On success, show welcome page
+    // * * On failure, show home page
+    // * POST sign in information
+    // * * On success, show welcome page
+    // * * On failure, show home page
+    // * GET login page
+    // * GET sign in page
+    // * default: home page
     if (request.method === 'POST' && request.url === '/login') {
 
 
 
     } else if (request.method === 'GET' && request.url === '/signup') {
-
+        response.end(SIGNUP_PAGE);
     } else {
-        response.end('Invalid URL');
+        response.end(LOGIN_PAGE);
     }
 
 

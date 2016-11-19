@@ -1,0 +1,18 @@
+<component name="libraryTable">
+  <library name="UniqueID">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/ardulink-core-base-2.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/ardulink-core-util-2.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/args4j-2.32.jar!/" />
+      <root url="jar://$PROJECT_DIR$/jssc-2.8.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/slf4j-api-1.7.12.jar!/" />
+      <root url="jar://$PROJECT_DIR$/ardulink-core-beans-2.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/validation-api-1.0.0.GA.jar!/" />
+      <root url="jar://$PROJECT_DIR$/example-uniqueid-2.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/slf4j-jdk14-1.7.12.jar!/" />
+      <root url="jar://$PROJECT_DIR$/ardulink-core-serial-jssc-2.0.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

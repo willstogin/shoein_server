@@ -21,6 +21,14 @@ module.exports = function(sio) {
         }
     };
 
+    // Tell the client to enter a password
+    exports.tellUserMustEnterPassword(client_token) {
+        if (client_token in sockets) {
+            var socket = sockets[client_token];
+            socket.emit("user_enter_password");
+        }
+    }
+
     // TODO SECURITY improve the unique token
     var counter = 0;
     exports.getUniqueToken = function() {

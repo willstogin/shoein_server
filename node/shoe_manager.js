@@ -42,7 +42,10 @@ module.exports = {
       +   serve error (device not recognized)
     */
     request_challenge: function(uid,perm_pk,temp_pk,password_cb,challenge_cb,failure_cb) {
-        
+        // To start, we just pick a case.
+        password_cb();
+//        challenge_cb("perm_challenge","temp_challenge");
+//        failure_cb();
     },
 
     // Identifies a shoe (specified by uid) with a user

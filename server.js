@@ -1,5 +1,7 @@
 //Lets require/import the HTTP module
 var http = require('http');
+var fileSystem = require('fs');
+var path = require('path');
 
 //Lets define a port we want to listen to
 const PORT=8080;
@@ -29,11 +31,15 @@ function handleRequest(request, response){
     } else if (request.method === 'POST' && request.url === '/signup') {
         //do some shit
     } else if (request.method === 'GET' && request.url === '/signup') {
-        response.end(SIGNUP_PAGE);
+        // CHANGE THIS WHEN HTML WRITTEN response.sendfile('html/DUMMY', {root: __dirname });
     } else if(request.method === 'GET' && request.url === '/login'){
         //do more shit
-    } else response.end(NOT_LOGGED_IN);
-    
+    } else {
+        var readStream = fileSystem.createReadStream("html/home.html");
+        // We replaced all the event handlers with a simple call to readStream.pipe()
+        readStream.pipe(response);
+    }
+
 
 
 

@@ -2,7 +2,8 @@
 <html>
 
   <head>
-    <link rel="stylesheet" type="text/css" href="/styles.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+    <script src="/socket.io/socket.io.js"></script>
   </head>
 <body>
 
@@ -12,12 +13,18 @@ function login(username, password) {
     console.log("Your in has been logged, BIATCH");
 }
 
+var socket = io();
+socket.on('welcome', function(data) {
+   console.log("I got welcomed!");
+});
+
 </script>
 
   <div class="login-page">
     <div class="form">
-      <div class="bootstrap-alert-danger">Failed to log in. Please check your credentials and try again</div>
+    <h1>Welcome</h1>
 
+    <p>Please enter your shoe-in credentials</p>
       <form  action = "/login" method = "post">
 
         Username: <br>

@@ -3,7 +3,7 @@
 var express = require('express');
 var app = express();
 var httpServer = require('http').Server(app);
-
+app.use('/static', express.static("./static"));
 
 var bcrypt = require('bcrypt');
 
@@ -16,6 +16,7 @@ var session_middleware = session({
 });
 app.use( session_middleware );
 
+
 // sockets
 var sio = require("socket.io")(httpServer);
 function siomw(f) { return function(socket,next){f(socket.request, socket.request.res, next)}; };
@@ -25,7 +26,7 @@ sio.use(siomw(session_middleware));
 
 // Our imports
 var shoe_manager = require('./shoe_manager');
-
+var socket_manager = require('./socket_manager')(sio);
 
 //var routes = require('./routes')
 //=====code=====
@@ -39,12 +40,17 @@ class User {
   }
 }
 
-var list_of_users = [];
+var list_of_user_sessions = [];
 
+
+
+/**************
+ * Routes below
+ ****************/
 
 
 app.get("/", function(req, res) {
-  res.send('hello world');
+  res.send('<div>hello world</div>');
 });
 
 
@@ -91,27 +97,19 @@ app.post("/response", function(req, res) {
 
 
 app.get("/newClient", function(req, res) {
-
+  console.log("route /newClient was contacted");
+  res.send(socket_manager.getUniqueToken());
 });
 
-app.get("/userSession/:token", function(req, res) {
+app.get("/newSession/:token", function(req, res) {
   console.log(req.params);
   var token = req.params.token;
   req.session.clientToken = token;
 
-  var match_found = false;
-  for (user of list_of_users) {
-    if (user.token === token) {
-      console.log("congratulations,  you, you found the match");
-      match_found = true;
-    }
-  }
-  if (!match_found) {
-    console.log("didn't find shit"),
-    list_of_user_sessions.push(new User("name", "password", token)); //TODO: WAT DO ABOUT THE NAME AND PASSWORD VALUES
-  }
+  res.redirect("/static/login.html");
 
 });
+
 
 
 

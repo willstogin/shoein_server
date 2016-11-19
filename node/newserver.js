@@ -26,7 +26,7 @@ sio.use(siomw(session_middleware));
 
 // Our imports
 var shoe_manager = require('./shoe_manager');
-
+var socket_manager = require('./socket_manager')(sio);
 
 //var routes = require('./routes')
 //=====code=====
@@ -42,6 +42,11 @@ class User {
 
 var list_of_user_sessions = [];
 
+
+
+/**************
+ * Routes below
+ ****************/
 
 
 app.get("/", function(req, res) {

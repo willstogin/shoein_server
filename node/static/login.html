@@ -3,6 +3,7 @@
 
   <head>
     <link rel="stylesheet" type="text/css" href="/static/styles.css">
+    <script src="/socket.io/socket.io.js"></script>
   </head>
 <body>
 
@@ -11,6 +12,11 @@
 function login(username, password) {
     console.log("Your in has been logged, BIATCH");
 }
+
+var socket = io();
+socket.on('welcome', function(data) {
+   console.log("I got welcomed!");
+});
 
 </script>
 

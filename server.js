@@ -49,10 +49,26 @@ function handleRequest(request, response){
             requestBody += data;
         });
         request.on('end', function() {
-            var formData = qs.parse(requestBody);
-            var founduser = new User("", "");
+             var formData = qs.parse(requestBody);
+             var username = formData["username"];
+             var password = formData["password"];
+             if (username != undefined
+                && password != undefined) {
+                    // Check if user exists
+                    var founduser = findUser(username);
+                    if (founduser.name == username
+                        && founduser.password == password) {
+                        // Log user in
+                        var readStream = fileSystem.createReadStream("html/welcome.html");
+                        readStream.pipe(response);
+                    } else {
+                        var readStream = fileSystem.createReadStream("html/loginerr.html");
+                        readStream.pipe(response);
+                    }
 
-            console.log("Attempting to log in with username: " + formData["username"]);
+                } else {
+                    console.error("Wrong data received");
+                }
         });
     } else if (request.method === 'POST' && request.url === '/signup') {
         // Handle singup data
@@ -85,11 +101,6 @@ function handleRequest(request, response){
                     console.error("Wrong data received");
                 }
         });
-
- //       response.writeHead(200, {
-  //          'Location': '/welcome'
-   //     });
-    //    response.end();
 
     } else if (request.method === 'GET' && request.url === '/signup') {
         // Display signup page

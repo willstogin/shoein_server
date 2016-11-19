@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <html>
+
+  <head>
+    <link rel="stylesheet" type="text/css" href="/styles.css">
+  </head>
 <body>
 
 
@@ -7,21 +11,26 @@
 function login(username, password) {
     console.log("Your in has been logged, BIATCH");
 }
+
 </script>
-<h1>Welcome</h1>
-<h2>Error logging in</h2>
 
-<p>Please enter your shoe-in credentials</p>
-<form action = "/login" method = "post">
+  <div class="login-page">
+    <div class="form">
+    <h1>Welcome</h1>
+    <h3>Failed to log in. Please check your credentials and try again</h3>
 
-Username: <br>
-<input type = "text" name = "username"> <br>
-Password: <br>
-<input type = "hidden" name = "password"> <br><br>
-<button type = "submit"> Log In </button>
+    <p>Please enter your shoe-in credentials</p>
+      <form  action = "/login" method = "post">
 
-</form>
-
+        Username: <br>
+        <input type = "text" name = "username"> <br>
+        Password: <br>
+        <input type = "password" name = "password"> <br><br>
+        <button type = "submit"> Log In </button>
+      </form>
+      <p class="message">Not registered? <a href="/signup">Create an account</a></p>
+    </div>
+  </div>
 
 </body>
 </html>

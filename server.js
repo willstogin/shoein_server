@@ -77,7 +77,7 @@ function handleRequest(request, response){
                         readStream.pipe(response);
                     } else {
                         console.error("Duplicate user detected");
-                        var readStream = fileSystem.createReadStream("html/loginerr.html");
+                        var readStream = fileSystem.createReadStream("html/signuperr.html");
                         readStream.pipe(response);
                     }
 
@@ -86,10 +86,10 @@ function handleRequest(request, response){
                 }
         });
 
-        response.writeHead(200, {
-            'Location': '/welcome'
-        });
-        response.end();
+ //       response.writeHead(200, {
+  //          'Location': '/welcome'
+   //     });
+    //    response.end();
 
     } else if (request.method === 'GET' && request.url === '/signup') {
         // Display signup page
@@ -108,9 +108,9 @@ function handleRequest(request, response){
         var readStream = fileSystem.createReadStream("html/styles.css");
        readStream.pipe(response);
     } else {
-        // Display home page
+        // Display login/home page
         console.log(request.url + " was requested, but could not find the proper file")
-        var readStream = fileSystem.createReadStream("html/home.html");
+        var readStream = fileSystem.createReadStream("html/login.html");
         readStream.pipe(response);
     }
 

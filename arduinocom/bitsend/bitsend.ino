@@ -44,6 +44,8 @@ void loop() {
     for (int i=0; i<8; i++) {
       b = getBit(b);
     }
-    Serial.print("B is " + b + "\n");
+    Serial.print("B is ");
+    Serial.print(b);
+    Serial.print("\n");
   }
 }

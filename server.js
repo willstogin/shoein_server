@@ -26,15 +26,14 @@ function handleRequest(request, response){
     // * default: home page
     if (request.method === 'POST' && request.url === '/login') {
 
-
-
+    } else if (request.method === 'POST' && request.url === '/signup') {
+        //do some shit
     } else if (request.method === 'GET' && request.url === '/signup') {
         response.end(SIGNUP_PAGE);
-    } else {
-        response.end(LOGIN_PAGE);
-    }
-
-
+    } else if(request.method === 'GET' && request.url === '/login'){
+        //do more shit
+    } else response.end(NOT_LOGGED_IN);
+    
 
 
 

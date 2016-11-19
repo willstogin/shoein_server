@@ -1,16 +1,20 @@
+"use strict";
 //Lets require/import the HTTP module
 var http = require('http');
 var fileSystem = require('fs');
 var path = require('path');
+var qs = require('querystring');
 
 //Lets define a port we want to listen to
 const PORT=8080;
+class User {
+    constructor(name, password) {
+        this.name = name;
+        this.password = password;
+    }
+}
 
-const NOT_LOGGED_IN = "You are not shoed in"
-const LOGIN_PAGE = "Please shoe in";
-const SIGNUP_PAGE = "Sign up for our service here";
-const LOGGED_IN = "Welcome! you are now shod in";
-
+var users;
 
 
 //We need a function which handles requests and send response
@@ -27,16 +31,49 @@ function handleRequest(request, response){
     // * GET sign in page
     // * default: home page
     if (request.method === 'POST' && request.url === '/login') {
+        // Handle login datavar requestBody = '';
 
     } else if (request.method === 'POST' && request.url === '/signup') {
-        //do some shit
+        // Handle singup data
+        request.on('data', function(data) {
+            requestBody += data;
+        });
+        request.on('end', function() {
+             var formData = qs.parse(requestBody);
+             if (formData["username"] != undefined
+                && formData["password"] != undefined) {
+                    // Check if user exists
+                    var arrayLength = users.length;
+                    var founduser = new User("","");
+                    for (var i=0; i<arrayLength; i++) {
+                        if (user[i].username == formData["username"]) {
+                            founduser = user[i];
+                            break;
+                        }
+                    }
+                    if (founduser.username != formData["username"]) {
+                        var user = new User(formData["username"], formData["password"]);
+                        users.push(user);
+                        console.log("Added user " + user.username
+                            + " with password " + user.password);
+                    } else {
+                        console.error("Duplicate user detected");
+                    }
+
+                }
+        });
+
     } else if (request.method === 'GET' && request.url === '/signup') {
-        // CHANGE THIS WHEN HTML WRITTEN response.sendfile('html/DUMMY', {root: __dirname });
+        // Display signup page
+        var readStream = fileSystem.createReadStream("html/signup.html");
+        readStream.pipe(response);
     } else if(request.method === 'GET' && request.url === '/login'){
-        //do more shit
+        // Display login page
+        var readstream = fileSystem.createReadStream("html/login.html");
+        readStream.pipe(response);
     } else {
+        // Display home page
         var readStream = fileSystem.createReadStream("html/home.html");
-        // We replaced all the event handlers with a simple call to readStream.pipe()
         readStream.pipe(response);
     }
 

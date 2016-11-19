@@ -14,31 +14,33 @@ void setup() {
 }
 
 // Reads the pin and writes the bit to the rightmost bit of char, returning result
-char getBit(char byte) {
+byte getBit(byte b) {
   while(digitalRead(inClock) == HIGH);
-  return (byte << 1) | ((digitalRead(inPin) == HIGH) ? 1 : 0);  
+  return (b << 1) | ((digitalRead(inPin) == HIGH) ? 1 : 0);  
 }
 
 // Consumes the leftmost bit and returns the resulting char
-char sendBit(char byte1) {
+byte sendBit(byte b) {
   digitalWrite(outClock, HIGH);
-  digitalWrite(outPin, ((byte & 0x80) ? HIGH : LOW));
-  delayMicroseconds(10000); // Corresponds to 9600 baud
+  digitalWrite(outPin, ((b & 0x80) ? HIGH : LOW));
+  delayMicroseconds(1000000); // Corresponds to 9600 baud
   digitalWrite(outClock, LOW);
   Serial.print("Done");
-  Serial.print((byte1 & 0x80
-  return byte << 1;
+  Serial.print(b);
+  Serial.print("\n");
+  
+  return b << 1;
 }
 
-void sendByte(char byte) {
-  char toSend = byte;
+void sendByte(byte b) {
+  byte toSend = b;
   for (int i=0; i<8; i++) {
     toSend = sendBit(toSend);
   }
-  char res = '\0';
+  byte res = '\0';
   res = getBit(res);
   if (!res) {
-    sendByte(byte);
+    sendByte(b);
   }
 }
 
@@ -47,7 +49,7 @@ char writer = 1;
 void loop() {
   if (writer) {
     
-    char a = (char)x;
+    byte a = (byte) x;
     int c = 0;
     c += (int)a;
     for (int i=0; i<8; i++) {
@@ -58,7 +60,7 @@ void loop() {
  //   Serial.print("\n");
     x++;
   } else {
-    char b = '\0';
+    byte b = '\0';
     for (int i=0; i<8; i++) {
       b = getBit(b);
     }

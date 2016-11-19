@@ -23,7 +23,7 @@ byte getBit(byte b) {
 byte sendBit(byte b) {
   digitalWrite(outClock, HIGH);
   digitalWrite(outPin, ((b & 0x80) ? HIGH : LOW));
-  delayMicroseconds(10000); // Corresponds to 9600 baud
+  delayMicroseconds(1000000); // Corresponds to 9600 baud
   digitalWrite(outClock, LOW);
   Serial.print("Done");
   Serial.print(b);

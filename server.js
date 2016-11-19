@@ -31,10 +31,18 @@ function handleRequest(request, response){
     // * GET sign in page
     // * default: home page
     if (request.method === 'POST' && request.url === '/login') {
-        // Handle login datavar requestBody = '';
-
+        // Handle login data
+        var requestBody = '';
+        request.on('data', function(data) {
+            requestBody += data;
+        });
+        request.on('end', function() {
+            var formData = qs.parse(requestBody);
+            console.log("Attempting to log in with username: " + formData["username"]);
+        });
     } else if (request.method === 'POST' && request.url === '/signup') {
         // Handle singup data
+        var requestBody = '';
         request.on('data', function(data) {
             requestBody += data;
         });
@@ -76,8 +84,6 @@ function handleRequest(request, response){
         var readStream = fileSystem.createReadStream("html/home.html");
         readStream.pipe(response);
     }
-
-//asdf
 
 
 

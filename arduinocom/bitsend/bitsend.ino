@@ -22,7 +22,7 @@ byte getBit(byte b) {
 
 // Consumes the leftmost bit and returns the resulting char
 byte sendBit(byte b) {
-  int delay = 1000; // 100 corresponds to 9600 baud
+  int delay = 100000; // 100 corresponds to 9600 baud
   digitalWrite(outClock, HIGH);
   digitalWrite(outPin, ((b & 0x80) ? HIGH : LOW));
   delayMicroseconds(delay/2); 
@@ -46,11 +46,15 @@ void sendByte(byte b) {
   }
 }
 
-byte x = 1;
+byte x = 42;
 char writer = 1;
 void loop() {
+  delay(10000);
   if (writer) {
     sendByte(x);
+    Serial.print("Sent: ");
+    Serial.print(x);
+    Serial.print("\n");
   } else {
     byte b = getByte();
     Serial.print(b);

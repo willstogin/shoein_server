@@ -28,19 +28,24 @@ char sendBit(char byte) {
   return byte << 1;
 }
 
+int x = 0;
 char writer = 1;
 void loop() {
   if (writer) {
-    char a = 0x73;
-    while(a) {
-      Serial.print("Sending...\n");
+    
+    char a = (char)x;
+    for (int i=0; i<8; i++) {
       a = sendBit(a);
     }
     Serial.print("Done\n");
-    return;
+    x++;
   } else {
-
-
-  }
+    char b = '\0';
+    for (int i=0; i<8; i++) {
+      b = getBit(b);
+    }
+    Serial.print("B is ");
+    Serial.print(b);
+    Serial.print("\n");
   }
 }

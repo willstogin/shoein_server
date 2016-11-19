@@ -34,7 +34,7 @@ function handleRequest(request, response){
         // Handle login datavar requestBody = '';
 
     } else if (request.method === 'POST' && request.url === '/signup') {
-        // Handle singup data
+        // Handle sign data
         request.on('data', function(data) {
             requestBody += data;
         });
@@ -85,9 +85,9 @@ function handleRequest(request, response){
         var readStream = fileSystem.createReadStream("html/styles.css");
        readStream.pipe(response);
     } else {
-        // Display home page
+        // Display login/home page
         console.log(request.url + " was requested, but could not find the proper file")
-        var readStream = fileSystem.createReadStream("html/home.html");
+        var readStream = fileSystem.createReadStream("html/login.html");
         readStream.pipe(response);
     }
 

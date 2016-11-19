@@ -2,22 +2,124 @@
 //======imports=====
 var express = require('express');
 var app = express();
+var httpServer = require('http').Server(app);
 
+
+var bcrypt = require('bcrypt');
+
+//session
 var session = require('express-session');
-app.use(session({
+var session_middleware = session({
   secret: "armbar",
   resave: false,
   saveUnitialized: true
-}));
+});
+app.use( session_middleware );
+
+// sockets
+var sio = require("socket.io")(httpServer);
+function siomw(f) { return function(socket,next){f(socket.request, socket.request.res, next)}; };
+sio.use(siomw(session_middleware));
+
+
+
+// Our imports
+var shoe_manager = require('./shoe_manager');
 
 
 //var routes = require('./routes')
 //=====code=====
 
+class User {
+  constructor(name, password, token) {
+      console.log("creating new user")
+      this.name = name;
+      this.password = password;
+      this.token = token;
+  }
+}
+
+var list_of_users = [];
+
+
+
 app.get("/", function(req, res) {
   res.send('hello world');
 });
 
-app.listen(8080, function() {
+
+app.post("/request_challenge", function(req, res) {
+  console.log("route /request_challenge was contacted");
+  function userMustEnterPassword() {
+    //TODO: send message saying 'you must enter your password'
+  };
+  function sendChallenge(permChallenge, tempChallenge) {
+    //TODO respond with challenges
+  };
+  function badDevice(){
+    //TODO send message saying 'this device is invalid'
+  };
+
+  var uid = req.query.uid;
+  var perm_pk = req.query.perm_pk;
+  var temp_pk = req.query.temp_pk;
+  var password_cb = userMustEnterPassword;
+  var challenge_cb = sendChallenge;
+  var failure_cb = badDevice;
+  shoe_manager.request_challenge( uid, perm_pk, temp_pk, password_cb , challenge_cb, failure_cb );
+
+});
+
+app.post("/response", function(req, res) {
+  function success() {
+    //tell the browser user they succeeded
+  }
+
+  function failure() {
+    //tell the browser user they failed
+  }
+
+  var success_cb = success;
+  var failure_cb = failure;
+  var uid = req.query.uid;
+  var perm_response = req.query.perm_response;
+  var temp_response = req.query.temp_response;
+
+
+  shoe_manager.check_response(uid, perm_response, temp_response, success_cb, failure_cb)
+});
+
+
+app.get("/newClient", function(req, res) {
+
+});
+
+app.get("/userSession/:token", function(req, res) {
+  console.log(req.params);
+  var token = req.params.token;
+  req.session.clientToken = token;
+
+  var match_found = false;
+  for (user of list_of_users) {
+    if (user.token === token) {
+      console.log("congratulations,  you, you found the match");
+      match_found = true;
+    }
+  }
+  if (!match_found) {
+    console.log("didn't find shit"),
+    list_of_user_sessions.push(new User("name", "password", token)); //TODO: WAT DO ABOUT THE NAME AND PASSWORD VALUES
+  }
+
+});
+
+
+
+
+
+
+
+
+httpServer.listen(8080, function() {
   console.log("listening on port: 8080");
 });

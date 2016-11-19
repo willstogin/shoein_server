@@ -69,7 +69,7 @@ function handleRequest(request, response){
         readStream.pipe(response);
     } else if(request.method === 'GET' && request.url === '/login'){
         // Display login page
-        var readstream = fileSystem.createReadStream("html/login.html");
+        var readStream = fileSystem.createReadStream("html/login.html");
         readStream.pipe(response);
     } else {
         // Display home page

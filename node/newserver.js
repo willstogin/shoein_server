@@ -18,13 +18,26 @@ var shoe_manager = require('./shoe_manager');
 //var routes = require('./routes')
 //=====code=====
 
+class User {
+  constructor(name, password, token) {
+      console.log("creating new user")
+      this.name = name;
+      this.password = password;
+      this.token = token;
+  }
+}
+
+var list_of_users = [];
+
+
+
 app.get("/", function(req, res) {
   res.send('hello world');
 });
 
 
-
-app.get("/request_challenge", function(req, res) {
+app.post("/request_challenge", function(req, res) {
+  console.log("route /request_challenge was contacted");
   function userMustEnterPassword() {
     //TODO: send message saying 'you must enter your password'
   };
@@ -35,9 +48,9 @@ app.get("/request_challenge", function(req, res) {
     //TODO send message saying 'this device is invalid'
   };
 
-  var uid = req.body.uid;
-  var perm_pk = req.body.perm_pk;
-  var temp_pk = req.body.temp_pk;
+  var uid = req.query.uid;
+  var perm_pk = req.query.perm_pk;
+  var temp_pk = req.query.temp_pk;
   var password_cb = userMustEnterPassword;
   var challenge_cb = sendChallenge;
   var failure_cb = badDevice;
@@ -45,7 +58,7 @@ app.get("/request_challenge", function(req, res) {
 
 });
 
-app.get("/response", function(req, res) {
+app.post("/response", function(req, res) {
   function success() {
     //tell the browser user they succeeded
   }
@@ -56,14 +69,37 @@ app.get("/response", function(req, res) {
 
   var success_cb = success;
   var failure_cb = failure;
-  var uid = req.body.uid;
-  var perm_response = req.body.perm_response;
-  var temp_response = req.body.temp_response;
+  var uid = req.query.uid;
+  var perm_response = req.query.perm_response;
+  var temp_response = req.query.temp_response;
 
 
   shoe_manager.check_response(uid, perm_response, temp_response, success_cb, failure_cb)
 });
 
+
+app.get("/newClient", function(req, res) {
+
+});
+
+app.get("/userSession/:token", function(req, res) {
+  console.log(req.params);
+  var token = req.params.token;
+  req.session.clientToken = token;
+
+  var match_found = false;
+  for (user of list_of_users) {
+    if (user.token === token) {
+      console.log("congratulations,  you, you found the match");
+      match_found = true;
+    }
+  }
+  if (!match_found) {
+    console.log("didn't find shit"),
+    list_of_user_sessions.push(new User("name", "password", token)); //TODO: WAT DO ABOUT THE NAME AND PASSWORD VALUES
+  }
+
+});
 
 
 

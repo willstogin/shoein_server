@@ -7,9 +7,15 @@ public class requestChallengeTester {
   public static void main(String[] args) {
     try {
       StringBuilder result = new StringBuilder();
-      URL url = new URL("http://localhost:8080/request_challenge", "armbar");
+      String urlString =  new String("http://localhost:8080/request_challenge"+"?uid=armbar&perm_pk=armbar&temp_pk=armbar");
+      URL url = new URL(urlString);
       HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-      conn.setRequestMethod("GET");
+      conn.setRequestMethod("POST");
+      String urlParameters = "uid=armbar&cn=&locale=&caller=&num=12345";
+
+
+
+
       BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
       String line;
       while ((line = rd.readLine()) != null) {

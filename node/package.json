@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "A sample server for authenticating via a dead-man's-switch ideally mounted on a shoe",
   "dependencies": {
+    "bcrypt": "^0.8.7",
     "express": "^4.14.0",
     "express-session": "^1.14.2",
     "passport": "^0.3.2",

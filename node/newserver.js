@@ -47,11 +47,11 @@ app.get("/request_challenge", function(req, res) {
 
 app.get("/response", function(req, res) {
   function success() {
-    //tell the user they succeeded
+    //tell the browser user they succeeded
   }
 
   function failure() {
-    //tell teh user they failed
+    //tell the browser user they failed
   }
 
   var success_cb = success;

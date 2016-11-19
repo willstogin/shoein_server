@@ -76,12 +76,17 @@ function handleRequest(request, response){
         // Display login page
         var readStream = fileSystem.createReadStream("html/login.html");
         readStream.pipe(response);
-    } else if (equest.method === 'GET' && request.url === '/welcome') {
+    } else if (request.method === 'GET' && request.url === '/welcome') {
         // Display welcome page
         var readStream = fileSystem.createReadStream("html/welcome.html");
        readStream.pipe(response);
+    } else if (request.method === 'GET' && request.url === '/styles.css') {
+        // Display welcome page
+        var readStream = fileSystem.createReadStream("html/styles.css");
+       readStream.pipe(response);
     } else {
         // Display home page
+        console.log(request.url + " was requested, but could not find the proper file")
         var readStream = fileSystem.createReadStream("html/home.html");
         readStream.pipe(response);
     }

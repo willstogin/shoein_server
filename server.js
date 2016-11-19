@@ -14,8 +14,20 @@ class User {
     }
 }
 
-var users;
+var users = [];
 
+// Finds the user with username
+// Returns User with empty name and password on failure
+function findUser(username) {
+    var arrayLength = users.length;
+    var found = new User("","");
+    for (var i=0; i<arrayLength; i++) {
+        if (users[i].name === username) {
+            return users[i];
+        }
+    }
+    return found;
+}
 
 //We need a function which handles requests and send response
 function handleRequest(request, response){
@@ -38,6 +50,8 @@ function handleRequest(request, response){
         });
         request.on('end', function() {
             var formData = qs.parse(requestBody);
+            var founduser = new User("", "");
+
             console.log("Attempting to log in with username: " + formData["username"]);
         });
     } else if (request.method === 'POST' && request.url === '/signup') {
@@ -48,26 +62,27 @@ function handleRequest(request, response){
         });
         request.on('end', function() {
              var formData = qs.parse(requestBody);
-             if (formData["username"] != undefined
-                && formData["password"] != undefined) {
+             var username = formData["username"];
+             var password = formData["password"];
+             if (username != undefined
+                && password != undefined) {
                     // Check if user exists
-                    var arrayLength = users.length;
-                    var founduser = new User("","");
-                    for (var i=0; i<arrayLength; i++) {
-                        if (user[i].username == formData["username"]) {
-                            founduser = user[i];
-                            break;
-                        }
-                    }
-                    if (founduser.username != formData["username"]) {
-                        var user = new User(formData["username"], formData["password"]);
+                    var founduser = findUser(username);
+                    if (founduser.name != username) {
+                        var user = new User(username, password);
                         users.push(user);
-                        console.log("Added user " + user.username
+                        console.log("Added user " + user.name
                             + " with password " + user.password);
+                        var readStream = fileSystem.createReadStream("html/welcome.html");
+                        readStream.pipe(response);
                     } else {
                         console.error("Duplicate user detected");
+                        var readStream = fileSystem.createReadStream("html/loginerr.html");
+                        readStream.pipe(response);
                     }
 
+                } else {
+                    console.error("Wrong data received");
                 }
         });
 

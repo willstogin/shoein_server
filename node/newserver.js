@@ -2,16 +2,28 @@
 //======imports=====
 var express = require('express');
 var app = express();
+var httpServer = require('http').Server(app);
+
 
 var bcrypt = require('bcrypt');
 
+//session
 var session = require('express-session');
-app.use(session({
+var session_middleware = session({
   secret: "armbar",
   resave: false,
   saveUnitialized: true
-}));
+});
+app.use( session_middleware );
 
+// sockets
+var sio = require("socket.io")(httpServer);
+function siomw(f) { return function(socket,next){f(socket.request, socket.request.res, next)}; };
+sio.use(siomw(session_middleware));
+
+
+
+// Our imports
 var shoe_manager = require('./shoe_manager');
 
 
@@ -108,6 +120,6 @@ app.get("/userSession/:token", function(req, res) {
 
 
 
-app.listen(8080, function() {
+httpServer.listen(8080, function() {
   console.log("listening on port: 8080");
 });

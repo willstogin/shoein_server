@@ -14,9 +14,9 @@ void setup() {
 }
 
 // Reads the pin and writes the bit to the rightmost bit of char, returning result
-char getBit(char byte) {
+byte getBit(byte b) {
   while(digitalRead(inClock) == HIGH);
-  return (byte << 1) | ((digitalRead(inPin) == HIGH) ? 1 : 0);  
+  return (b << 1) | ((digitalRead(inPin) == HIGH) ? 1 : 0);  
 }
 
 // Consumes the leftmost bit and returns the resulting char
@@ -26,12 +26,14 @@ byte sendBit(byte b) {
   delayMicroseconds(10000); // Corresponds to 9600 baud
   digitalWrite(outClock, LOW);
   Serial.print("Done");
-  Serial.print((b & 0x80
+  Serial.print(b);
+  Serial.print("\n");
+  
   return b << 1;
 }
 
 void sendByte(byte b) {
-  char toSend = b;
+  byte toSend = b;
   for (int i=0; i<8; i++) {
     toSend = sendBit(toSend);
   }

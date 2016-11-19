@@ -3,7 +3,7 @@
 var express = require('express');
 var app = express();
 var httpServer = require('http').Server(app);
-app.use('/html', express.static("./html"));
+app.use('/static', express.static("./static"));
 
 var bcrypt = require('bcrypt');
 
@@ -95,23 +95,12 @@ app.get("/newClient", function(req, res) {
 
 });
 
-app.get("/userSession/:token", function(req, res) {
+app.get("/newSession/:token", function(req, res) {
   console.log(req.params);
   var token = req.params.token;
   req.session.clientToken = token;
 
-  var match_found = false;
-  for (user in list_of_user_sessions) {
-    if (user.token === token) {
-      console.log("congratulations,  you, you found the match");
-      match_found = true;
-    }
-  }
-  if (!match_found) {
-    console.log("didn't find shit"),
-    list_of_user_sessions.push(new User("name", "password", token)); //TODO: WAT DO ABOUT THE NAME AND PASSWORD VALUES
-  }
-  res.redirect("/html/login.html");
+  res.redirect("/static/login.html");
 
 });
 

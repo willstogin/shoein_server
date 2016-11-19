@@ -1,0 +1,9 @@
+{
+  "name": "ShoeIn",
+  "version": "0.0.1",
+  "description": "A sample server for authenticating via a dead-man's-switch ideally mounted on a shoe",
+  "dependencies": {
+    "pug.js": "*"
+  },
+  "engine": "node >=0.6.x"
+}

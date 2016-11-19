@@ -52,3 +52,9 @@ jspm_packages
 .yarn-integrity
 
 
+
+
+
+
+
+*.class

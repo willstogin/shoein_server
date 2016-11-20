@@ -1,16 +1,22 @@
-
+bool connected = false;
 int inClock = 8;
 int inPin = 9;
 int outClock = 10;
 int outPin = 11;
+int connIn = 12;
+int connOut = 13;
 
 void setup() {
   // put your setup code here, to run once:
+  //i made a change
   Serial.begin(9600);
   pinMode(outPin, OUTPUT);
   pinMode(inPin, INPUT);
   pinMode(inClock, INPUT);
   pinMode(outClock, OUTPUT);
+  pinMode(connOut, OUTPUT);
+  pinMode(connIn, INPUT);
+  digitalWrite(connOut, HIGH);
 }
 
 // Reads the pin and writes the bit to the rightmost bit of char, returning result
@@ -46,14 +52,22 @@ void sendByte(byte b) {
   }
 }
 
+
 byte x = 1;
-char writer = 1;
+char writer = 0;
 void loop() {
-  if (writer) {
+  if (writer && !connected) {
+    while(!connected) connected = (digitalRead(connIn) == HIGH);
+    delay(5000);
+  } else if (writer && connected) {
+
     sendByte(x);
+    connected = (digitalRead(connIn) == HIGH);
+  } else if (!writer && !connected) {
+    while(!connected) connected = (digitalRead(connIn) == HIGH);
   } else {
     byte b = getByte();
-    Serial.print(b);
-    Serial.print("\n");
+    Serial.println("B is: " + b);
+    connected = (digitalRead(connIn) == HIGH);
   }
 }

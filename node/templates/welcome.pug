@@ -80,4 +80,5 @@ html
       socket.on('forceLogout', function(data) {
          console.log("I have been forced to logout due to an absence of authentication");
          //redirect to login
+         window.location.href = "/static/login.html";
       });

@@ -111,6 +111,7 @@ void sendByteBuffer(String s) {
 /* *************************** CONNECTION HANDLER **************************** */
 void onShoeConnect() {
   sendByteBuffer(REQUEST_ID_MESSAGE);
+  sendByteBuffer("butts");
   
   // Request a challenge
   sendByteBuffer(REQUEST_CHALLENGE_MESSAGE);

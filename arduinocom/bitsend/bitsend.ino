@@ -1,5 +1,6 @@
 #include <string.h>
 
+
 bool connected = false;
 int inClock = 8;
 int inPin = 9;
@@ -7,7 +8,7 @@ int outClock = 10;
 int outPin = 11;
 int connIn = 12;
 int connOut = 13;
-char SHOE = 1;
+char SHOE = 0;
 byte x = 42;
 
 const int uniqueID = 1337;
@@ -15,7 +16,7 @@ byte permanentKeyPair[80];
 byte tempKeyPair[80];
 
 const String REQUEST_CHALLENGE_MESSAGE = "I would like a challenge, thank you.";
-const String REQUEST_ID_KEY = "ID";
+const String REQUEST_ID_MESSAGE = "ID";
 const String REQUEST_TMPKEY_KEY = "tempKey";
 const String REQUEST_PERMKEY_KEY = "permKey";
 
@@ -42,7 +43,9 @@ void loop() {
 /* ************************* CHECKING FOR A CONNECTION *********************** */
 
 void updateConnection() {
-   connected = (digitalRead(connIn) == HIGH);
+  bool old = connected;
+  connected = (digitalRead(connIn) == HIGH);
+  //if (old != connected) delay(100);
 }
 
 /* ********************* SENDING AND RECEIVING BITS AND BYTES  *************** */
@@ -61,7 +64,7 @@ byte getBit(byte b) {
 
 // Consumes the leftmost bit and returns the resulting char
 byte sendBit(byte b) {
-  int delay = 100000; // 100 corresponds to 9600 baud
+  int delay = 10000; // 100 corresponds to 9600 baud
   digitalWrite(outClock, HIGH);
   digitalWrite(outPin, ((b & 0x80) ? HIGH : LOW));
   delayMicroseconds(delay/2); 
@@ -96,6 +99,7 @@ void getByteBuffer(byte* buffer, int size) {
   while (connected && i < size && curByte != '\0') {
     curByte = getByte();
     buffer[++i] = curByte;
+    updateConnection();
   }
 }
 
@@ -111,17 +115,17 @@ void sendByteBuffer(String s) {
 
 /* *************************** CONNECTION HANDLER **************************** */
 void onShoeConnect() {
-  sendByteBuffer(REQUEST_ID_MESSAGE);
-  sendByteBuffer("butts");
-  
-  // Request a challenge
-  sendByteBuffer(REQUEST_CHALLENGE_MESSAGE);
+  sendByteBuffer("abutts");
 
-//  byte challenge[80];
-//  getByteBuffer
-  
-  // Hand ID and two keys over
-  // Wait for a response
+  sendByteBuffer("atmpkey");
+
+  sendByteBuffer("apermkey");
+
+  //sendByteBuffer("\n");
+  // Await a response
+  byte buffer[80];
+  getByteBuffer(buffer, 80);
+  Serial.println(String((char*)buffer));
 }
 
 void onMatConnect() {
@@ -129,70 +133,48 @@ void onMatConnect() {
   byte ID[80];
   byte tempKey[80];
   byte permKey[80];
-  //shoe sends REQUEST_ID_KEY
-  if(String((char*) request) == REQUEST_ID_KEY) {
-    Serial.println("ID key recognized");
-    getByteBuffer(request, 80);
-    strcpy((char*)ID, (char*)request); //Gets and saves the request should be ID
-  }
+  //shoe sends REQUEST_ID_MESSAGE
   
-  if(String((char*) request) == REQUEST_TMPKEY_KEY) {
-    Serial.println("Tmpkey key recognized");
-    getByteBuffer(request, 80);
-    strcpy((char*)tempKey, (char*)request); //Gets and saves the request should be tempKey
-  }
+  getByteBuffer(ID, 80); //get ID
   
-  if(String((char*) request) == REQUEST_PERMKEY_KEY) {
-    Serial.println("Permkey key recognized");
-    getByteBuffer(request, 80);
-    strcpy((char*)permKey, (char*)request); //Gets and saves the request should be permKey
-  }
-  Serial.print("ID is: ");
+  getByteBuffer(tempKey, 80);//get tempkey
+ 
+  getByteBuffer(permKey, 80);//get permkey
+  
+  Serial.print("ID is:");
   Serial.println(String((char*)ID));
 
-  Serial.print("Temp Key is: ");
+  Serial.print("Temp Key is:");
   Serial.println(String((char*)tempKey));
 
-  Serial.print("Perm Key is: ");
+  Serial.print("Perm Key is:");
   Serial.println(String((char*)permKey));
-  
-  //send to server at some point
 
-  getByteBuffer(request, 80);
-  byte id[80];
-  if (String((char*)request) == REQUEST_ID_MESSAGE) {  
-    Serial.print("requested id\n");
-    getByteBuffer(id, 80);
-    strcpy((char*)id, (char*)request);       
-    Serial.println(String((char*)id));
-   
-  }
-  getByteBuffer(request, 80);
-  Serial.println(String((char*)request));
-  if (String((char*)request) == REQUEST_CHALLENGE_MESSAGE) {
-    Serial.println("Challenge request received!");
-  }
+  /**
+     Things Mat should do:
+      ~"log \n" next line will have pc client print to console
+      ~"request challenge \n" to request challenge
+      ~next 3 things are uid \n, permpk \n, temppk\n
+      ~after sending these 3, wait for client to give one of 3
+          -"challenge response" (2 lines, one for each key, perm then temp) 
+          -"discard" -> no challenge coming back
+*/
 }
 
 /* ************************** LOOP FOR MAT ******************************** */
 void matLoop() {
-  if (connected) {
-    //byte b = getByte();
-    byte buffer[80];
-    getByteBuffer(buffer, 80);
-    if (!connected) return; // Discard corrupted byte
-    Serial.print("B is: ");
-    for (int i=0; i<80 && buffer[i]!='\0'; i++)
-      Serial.print((char) buffer[i]);
-    Serial.println("Receiving...");
+  while (!connected) {
     updateConnection();
-  } else {
-    while(!connected) {
-      updateConnection();
-      Serial.println("Not connected...");
-    }
-    onMatConnect();
+    //Serial.println("Not connected...");
   }
+  delay(500);
+  onMatConnect();
+  while (connected) {
+    updateConnection();
+  }
+  Serial.println("shoe disconnected");
+  delay(1000);
+
 }
 
 /* ********************* LOOP FOR SHOE ************************************ */
@@ -208,8 +190,9 @@ void shoeLoop() {
         Serial.println("Not connected...");
         updateConnection();
       }
+
       Serial.println("Connected... delaying");
-      delay(5000);
+      delay(2000);
       onShoeConnect();
   }
 }

@@ -9,19 +9,25 @@
 
 
 <script>
-function login(username, password) {
-    console.log("Your in has been logged, BIATCH");
-}
+    function login(username, password) {
+        console.log("Your in has been logged, BIATCH");
+    }
 
-var socket = io();
-socket.on('welcome', function(data) {
-   console.log("I got welcomed!");
-});
+    var socket = io();
+    socket.on('welcome', function(data) {
+       console.log("I got welcomed!");
+    });
 
-socket.on('user_enter_password', function() {
-   console.log("password must be entered");
-   alert("you must enter a password");
-});
+    socket.on('user_enter_password', function() {
+       console.log("password must be entered");
+       alert("you must enter a password");
+    });
+
+    socket.on('password_incorrect', function() {
+       console.log("password provided is incorrect");
+       alert("you must enter a password"); <!-- TODO replace with html element activating-->
+    });
+
 
 </script>
 

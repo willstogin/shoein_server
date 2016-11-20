@@ -85,7 +85,7 @@ app.get("/welcome.html", function(req, res) {
 app.post("/signup", function(req, res) {
     var username = req.body.username;
     var password = req.body.password;
-    
+
     if (!User.userExists(username)) {
         var user = User.makeUser(username,password);
         req.login(user, function(err) {
@@ -94,6 +94,7 @@ app.post("/signup", function(req, res) {
         });
     } else {
         // TODO send a message to the client that the username exists
+        
         res.redirect("/static/signup.html");
     }
 });

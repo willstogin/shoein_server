@@ -8,7 +8,7 @@ int outClock = 10;
 int outPin = 11;
 int connIn = 12;
 int connOut = 13;
-char SHOE = 1;
+char SHOE = 0;
 byte x = 42;
 
 const int uniqueID = 1337;
@@ -125,7 +125,7 @@ void onShoeConnect() {
   sendByteBuffer(REQUEST_CHALLENGE_MESSAGE);
 
   // Await a response
-  char buffer[80];
+  byte buffer[80];
   getByteBuffer(buffer, 80);
   Serial.println(String((char*)buffer));
 }
@@ -136,47 +136,24 @@ void onMatConnect() {
   byte tempKey[80];
   byte permKey[80];
   //shoe sends REQUEST_ID_MESSAGE
-  if(String((char*) request) == REQUEST_ID_MESSAGE) {
-    Serial.println("ID key recognized");
-    getByteBuffer(request, 80);
-    strcpy((char*)ID, (char*)request); //Gets and saves the request should be ID
-  }
   
-  if(String((char*) request) == REQUEST_TMPKEY_KEY) {
-    Serial.println("Tmpkey key recognized");
-    getByteBuffer(request, 80);
-    strcpy((char*)tempKey, (char*)request); //Gets and saves the request should be tempKey
-  }
+  getByteBuffer(ID, 80); //get ID
   
-  if(String((char*) request) == REQUEST_PERMKEY_KEY) {
-    Serial.println("Permkey key recognized");
-    getByteBuffer(request, 80);
-    strcpy((char*)permKey, (char*)request); //Gets and saves the request should be permKey
-  }
-  Serial.print("ID is: ");
+  getByteBuffer(tempKey, 80);//get tempkey
+ 
+  getByteBuffer(permKey, 80);//get permkey
+  
+  Serial.print("ID is:");
   Serial.println(String((char*)ID));
 
-  Serial.print("Temp Key is: ");
+  Serial.print("Temp Key is:");
   Serial.println(String((char*)tempKey));
 
-  Serial.print("Perm Key is: ");
+  Serial.print("Perm Key is:");
   Serial.println(String((char*)permKey));
-  
-  //send to server at some point
 
-  getByteBuffer(request, 80);
-  byte id[80];
-  if (String((char*)request) == REQUEST_ID_MESSAGE) {  
-    Serial.print("requested id\n");
-    getByteBuffer(id, 80); //gets ID
-    Serial.println(String((char*)id));
-   
-  }
-  getByteBuffer(request, 80);
-  Serial.println(String((char*)request));
-  if (String((char*)request) == REQUEST_CHALLENGE_MESSAGE) {
-    Serial.println("Challenge request received!");
-  }
+  
+  
 }
 
 /* ************************** LOOP FOR MAT ******************************** */
@@ -186,15 +163,15 @@ void matLoop() {
     byte buffer[80];
     getByteBuffer(buffer, 80);
     if (!connected) return; // Discard corrupted byte
-    Serial.print("B is: ");
+    //Serial.print("B is: ");
     for (int i=0; i<80 && buffer[i]!='\0'; i++)
       Serial.print((char) buffer[i]);
-    Serial.println("Receiving...");
+    //Serial.println("Receiving...");
     updateConnection();
   } else {
     while(!connected) {
       updateConnection();
-      Serial.println("Not connected...");
+      //Serial.println("Not connected...");
     }
     onMatConnect();
   }

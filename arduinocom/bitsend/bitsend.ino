@@ -34,16 +34,21 @@ bool updateConnection() {
    connected = (digitalRead(connIn) == HIGH);
 }
 
+/* *************************** CONNECTION HANDLER **************************** */
+void onConnect() {
+  
+}
+
 /* ********************* SENDING AND RECEIVING BITS AND BYTES  *************** */
 // Reads the pin and writes the bit to the rightmost bit of char, returning result
 byte getBit(byte b) {
   while(digitalRead(inClock) == LOW) {
     updateConnection();
-    if(connected) return -1;
+    if(!connected) return -1;
   }
   while(digitalRead(inClock) == HIGH) {
     updateConnection();
-    if(connected) -1;
+    if(!connected) -1;
   }
   return (b << 1) | ((digitalRead(inPin) == HIGH) ? 1 : 0);  
 }
@@ -64,6 +69,7 @@ byte getByte() {
   for (int i=0; i<8; i++) {
     accumulator = getBit(accumulator);
     if (!connected) return -1;
+    Serial.println(accumulator);
   }
   return accumulator;
 }
@@ -73,7 +79,7 @@ void sendByte(byte b) {
   for (int i=0; i<8; i++) {
     toSend = sendBit(toSend);
     updateConnection();
-    if (connected) return;
+    if (!connected) return;
   }
   Serial.println(b);
 }
@@ -82,7 +88,7 @@ void sendByte(byte b) {
 void matLoop() {
   if (connected) {
     byte b = getByte();
-    if (connected) return; // Discard corrupted byte
+    if (!connected) return; // Discard corrupted byte
     Serial.print("B is: ");
     Serial.println(b);
     Serial.println("Receiving...");
@@ -100,7 +106,7 @@ void shoeLoop() {
     if (connected) {
       sendByte(x);
       Serial.println("Sending...");
-      connected = (digitalRead(connIn) == HIGH);    
+      updateConnection();    
     } else {
       Serial.println("Going from connected to not.");
       delay(10);

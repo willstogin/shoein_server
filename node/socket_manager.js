@@ -36,7 +36,7 @@ module.exports = function(sio) {
             var socket = sockets[client_token];
             socket.emit("user_account_name_taken");
         } else {
-            console.log("the key" + client_token +" Is not in the list of sockets");
+            console.log("tellUserAccountIsTaken() - the key" + client_token +" Is not in the list of sockets");
         }
     };
 

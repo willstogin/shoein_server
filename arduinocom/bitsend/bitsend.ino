@@ -8,7 +8,7 @@ int outClock = 10;
 int outPin = 11;
 int connIn = 12;
 int connOut = 13;
-char SHOE = 1;
+char SHOE = 0;
 byte x = 42;
 
 const int uniqueID = 1337;
@@ -43,7 +43,9 @@ void loop() {
 /* ************************* CHECKING FOR A CONNECTION *********************** */
 
 void updateConnection() {
-   connected = (digitalRead(connIn) == HIGH);
+  bool old = connected;
+  connected = (digitalRead(connIn) == HIGH);
+  //if (old != connected) delay(100);
 }
 
 /* ********************* SENDING AND RECEIVING BITS AND BYTES  *************** */
@@ -97,6 +99,7 @@ void getByteBuffer(byte* buffer, int size) {
   while (connected && i < size && curByte != '\0') {
     curByte = getByte();
     buffer[++i] = curByte;
+    updateConnection();
   }
 }
 
@@ -112,11 +115,11 @@ void sendByteBuffer(String s) {
 
 /* *************************** CONNECTION HANDLER **************************** */
 void onShoeConnect() {
-  sendByteBuffer("butts");
+  sendByteBuffer("abutts");
 
-  sendByteBuffer("tmpkey");
+  sendByteBuffer("atmpkey");
 
-  sendByteBuffer("permkey");
+  sendByteBuffer("apermkey");
 
   //sendByteBuffer("\n");
   // Await a response
@@ -147,29 +150,31 @@ void onMatConnect() {
   Serial.print("Perm Key is:");
   Serial.println(String((char*)permKey));
 
-  
-  
+  /**
+     Things Mat should do:
+      ~"log \n" next line will have pc client print to console
+      ~"request challenge \n" to request challenge
+      ~next 3 things are uid \n, permpk \n, temppk\n
+      ~after sending these 3, wait for client to give one of 3
+          -"challenge response" (2 lines, one for each key, perm then temp) 
+          -"discard" -> no challenge coming back
+*/
 }
 
 /* ************************** LOOP FOR MAT ******************************** */
 void matLoop() {
-  if (connected) {
-    //byte b = getByte();
-    byte buffer[80];
-    getByteBuffer(buffer, 80);
-    if (!connected) return; // Discard corrupted byte
-    //Serial.print("B is: ");
-    for (int i=0; i<80 && buffer[i]!='\0'; i++)
-      Serial.print((char) buffer[i]);
-    //Serial.println("Receiving...");
+  while (!connected) {
     updateConnection();
-  } else {
-    while(!connected) {
-      updateConnection();
-      //Serial.println("Not connected...");
-    }
-    onMatConnect();
+    //Serial.println("Not connected...");
   }
+  delay(500);
+  onMatConnect();
+  while (connected) {
+    updateConnection();
+  }
+  Serial.println("shoe disconnected");
+  delay(1000);
+
 }
 
 /* ********************* LOOP FOR SHOE ************************************ */

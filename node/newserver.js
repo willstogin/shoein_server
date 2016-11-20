@@ -54,13 +54,15 @@ app.get("/", function(req, res) {
 });
 
 
-// from java client
 app.post("/request_challenge", function(req, res) {
   var token = req.query.token;
   console.log("route /request_challenge was contacted with token: " + token);
+
   function userMustEnterPassword() {
-    //TODO: send message saying 'you must enter your password'
+    socket_manager.tellUserMustEnterPassword(token);
+    res.send("");
   };
+
   function sendChallenge(permChallenge, tempChallenge) {
     //TODO respond with challenges
   };
@@ -78,7 +80,6 @@ app.post("/request_challenge", function(req, res) {
 
 });
 
-// from java client
 app.post("/response", function(req, res) {
   function success() {
     //tell the browser user they succeeded
@@ -98,7 +99,7 @@ app.post("/response", function(req, res) {
   shoe_manager.check_response(uid, perm_response, temp_response, success_cb, failure_cb)
 });
 
-// from java client
+
 app.get("/newClient", function(req, res) {
   console.log("route /newClient was contacted");
   res.send(socket_manager.getUniqueToken());

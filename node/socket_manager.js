@@ -1,11 +1,11 @@
 
 
 module.exports = function(sio) {
-    
+
     exports = {};
 
     var sockets = {};
-    
+
     sio.sockets.on("connection", function(socket) {
         console.log("socket connected!");
         socket.emit("welcome", {message: "welcome from server"});
@@ -22,12 +22,14 @@ module.exports = function(sio) {
     };
 
     // Tell the client to enter a password
-    exports.tellUserMustEnterPassword(client_token) {
+    exports.tellUserMustEnterPassword = function(client_token) {
         if (client_token in sockets) {
             var socket = sockets[client_token];
             socket.emit("user_enter_password");
+        } else {
+          console.log("the key" + client_token +" Is not in the list of sockets");
         }
-    }
+    };
 
     // TODO SECURITY improve the unique token
     var counter = 0;

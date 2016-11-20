@@ -1,8 +1,10 @@
-
+bool connected = false;
 int inClock = 8;
 int inPin = 9;
 int outClock = 10;
 int outPin = 11;
+int connIn = 12;
+int connOut = 13;
 
 void setup() {
   // put your setup code here, to run once:
@@ -12,34 +14,35 @@ void setup() {
   pinMode(inPin, INPUT);
   pinMode(inClock, INPUT);
   pinMode(outClock, OUTPUT);
+  pinMode(connOut, OUTPUT);
+  pinMode(connIn, INPUT);
+  digitalWrite(connOut, HIGH);
 }
 
-<<<<<<< HEAD
-// Reads the pin and writes the bit to the rightmost bit of byte1, returning result
-char getBit(char byte1) {
-  while(digitalRead(inClock) == LOW);
-  while(digitalRead(inClock) == HIGH);
-
-  return (byte << 1) | ((digitalRead(inPin) == HIGH) ? 1 : 0);  
-=======
 // Reads the pin and writes the bit to the rightmost bit of char, returning result
 byte getBit(byte b) {
+  while(digitalRead(inClock) == LOW);
   while(digitalRead(inClock) == HIGH);
   return (b << 1) | ((digitalRead(inPin) == HIGH) ? 1 : 0);  
->>>>>>> 9581da7feb9d00c483cfcf6a188184ae75faa3eb
 }
 
 // Consumes the leftmost bit and returns the resulting char
 byte sendBit(byte b) {
+  int delay = 1000; // 100 corresponds to 9600 baud
   digitalWrite(outClock, HIGH);
   digitalWrite(outPin, ((b & 0x80) ? HIGH : LOW));
-  delayMicroseconds(1000000); // Corresponds to 9600 baud
+  delayMicroseconds(delay/2); 
   digitalWrite(outClock, LOW);
-  Serial.print("Done");
-  Serial.print(b);
-  Serial.print("\n");
-  
+  delayMicroseconds(delay/2);
   return b << 1;
+}
+
+byte getByte() {
+  byte accumulator = '\0';
+  for (int i=0; i<8; i++) {
+    accumulator = getBit(accumulator);
+  }
+  return accumulator;
 }
 
 void sendByte(byte b) {
@@ -47,43 +50,24 @@ void sendByte(byte b) {
   for (int i=0; i<8; i++) {
     toSend = sendBit(toSend);
   }
-  byte res = '\0';
-  res = getBit(res);
-  if (!res) {
-    sendByte(b);
-  }
 }
 
-int x = 0;
+
+byte x = 1;
 char writer = 0;
 void loop() {
-  if (writer) {//writing
-    
-    byte a = (byte) x;
-    int c = 0;
-    c += (int)a;
-    for (int i=0; i<8; i++) {
-      a = sendBit(a);
-    }
-//    Serial.print("Done");
-//    Serial.print(c);
- //   Serial.print("\n");
-    x++;
-<<<<<<< HEAD
-  } else {//reading
-    char b = '\0';
-=======
+  if (writer && !connected) {
+    while(!connected) connected = (digitalRead(connIn) == HIGH);
+    delay(5000);
+  } else if (writer && connected) {
+
+    sendByte(x);
+    connected = (digitalRead(connIn) == HIGH);
+  } else if (!writer && !connected) {
+    while(!connected) connected = (digitalRead(connIn) == HIGH);
   } else {
-    byte b = '\0';
->>>>>>> 9581da7feb9d00c483cfcf6a188184ae75faa3eb
-    for (int i=0; i<8; i++) {
-      b = getBit(b);
-      Serial.print(b);
-    }
-    int c = 0;
-    c = c + (int) b;
-    Serial.print("C is ");
-    Serial.print(c);
-    Serial.print("\n");
+    byte b = getByte();
+    Serial.println("B is: " + b);
+    connected = (digitalRead(connIn) == HIGH);
   }
 }

@@ -8,6 +8,12 @@ int connOut = 13;
 char SHOE = 1;
 byte x = 42;
 
+const int uniqueID = 1337;
+byte permanentKeyPair[80];
+byte tempKeyPair[80];
+
+const String REQUEST_CHALLENGE_MESSAGE = "I would like a challenge, thank you.";
+
 
 void setup() {
   // put your setup code here, to run once:
@@ -33,11 +39,6 @@ void loop() {
 
 void updateConnection() {
    connected = (digitalRead(connIn) == HIGH);
-}
-
-/* *************************** CONNECTION HANDLER **************************** */
-void onConnect() {
-  
 }
 
 /* ********************* SENDING AND RECEIVING BITS AND BYTES  *************** */
@@ -103,6 +104,17 @@ void sendByteBuffer(String s) {
   
 }
 
+
+/* *************************** CONNECTION HANDLER **************************** */
+void onShoeConnect() {
+  // Request a challenge
+  sendByteBuffer(REQUEST_CHALLENGE_MESSAGE);
+  
+  // Hand ID and two keys over
+  // Wait for a response
+}
+
+
 /* ************************** LOOP FOR MAT ******************************** */
 void matLoop() {
   if (connected) {
@@ -126,7 +138,7 @@ void matLoop() {
 /* ********************* LOOP FOR SHOE ************************************ */
 void shoeLoop() {
     if (connected) {
-      sendByteBuffer("Hello, World!");
+      sendByteBuffer("Hello, World!\n");
       Serial.println("Sending...");
       updateConnection();    
     } else {
@@ -136,6 +148,7 @@ void shoeLoop() {
         Serial.println("Not connected...");
         updateConnection();
       }
+      onShoeConnect();
       Serial.println("Connected... delaying");
       delay(5000);
   }

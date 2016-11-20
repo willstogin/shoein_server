@@ -107,13 +107,26 @@ void sendByteBuffer(String s) {
 
 /* *************************** CONNECTION HANDLER **************************** */
 void onShoeConnect() {
+  // Provide id, temp and perm keys
+  
   // Request a challenge
   sendByteBuffer(REQUEST_CHALLENGE_MESSAGE);
+
+//  byte challenge[80];
+//  getByteBuffer
   
   // Hand ID and two keys over
   // Wait for a response
 }
 
+void onMatConnect() {
+  byte request[80];
+  getByteBuffer(request, 80);
+  Serial.println(String((char*)request));
+  if (String((char*)request) == REQUEST_CHALLENGE_MESSAGE) {
+    Serial.println("Challenge request received!");
+  }
+}
 
 /* ************************** LOOP FOR MAT ******************************** */
 void matLoop() {

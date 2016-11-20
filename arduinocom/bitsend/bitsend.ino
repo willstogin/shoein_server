@@ -37,27 +37,27 @@ void loop() {
   if (SHOE) {
     shoeLoop();
   } else {
-    matLoop();
+    matLoop(); 
   }
 }
 /* ************************* CHECKING FOR A CONNECTION *********************** */
 
 void updateConnection() {
-  connected = (digitalRead(connIn) == HIGH);
+   connected = (digitalRead(connIn) == HIGH);
 }
 
 /* ********************* SENDING AND RECEIVING BITS AND BYTES  *************** */
 // Reads the pin and writes the bit to the rightmost bit of char, returning result
 byte getBit(byte b) {
-  while (digitalRead(inClock) == LOW) {
+  while(digitalRead(inClock) == LOW) {
     updateConnection();
-    if (!connected) return -1;
+    if(!connected) return -1;
   }
-  while (digitalRead(inClock) == HIGH) {
+  while(digitalRead(inClock) == HIGH) {
     updateConnection();
-    if (!connected) - 1;
+    if(!connected) -1;
   }
-  return (b << 1) | ((digitalRead(inPin) == HIGH) ? 1 : 0);
+  return (b << 1) | ((digitalRead(inPin) == HIGH) ? 1 : 0);  
 }
 
 // Consumes the leftmost bit and returns the resulting char
@@ -65,24 +65,24 @@ byte sendBit(byte b) {
   int delay = 10000; // 100 corresponds to 9600 baud
   digitalWrite(outClock, HIGH);
   digitalWrite(outPin, ((b & 0x80) ? HIGH : LOW));
-  delayMicroseconds(delay / 2);
+  delayMicroseconds(delay/2); 
   digitalWrite(outClock, LOW);
-  delayMicroseconds(delay / 2);
+  delayMicroseconds(delay/2);
   return b << 1;
 }
 
 byte getByte() {
   byte accumulator = '\0';
-  for (int i = 0; i < 8; i++) {
+  for (int i=0; i<8; i++) {
     accumulator = getBit(accumulator);
     if (!connected) return -1;
-  }
+   }
   return accumulator;
 }
 
 void sendByte(byte b) {
   byte toSend = b;
-  for (int i = 0; i < 8; i++) {
+  for (int i=0; i<8; i++) {
     toSend = sendBit(toSend);
     updateConnection();
     if (!connected) return;
@@ -96,18 +96,17 @@ void getByteBuffer(byte* buffer, int size) {
   buffer[i] = curByte;
   while (connected && i < size && curByte != '\0') {
     curByte = getByte();
-    Serial.println(curByte);
     buffer[++i] = curByte;
   }
 }
 
 void sendByteBuffer(String s) {
   int len = s.length();
-  for (int i = 0; i <= len; i++) {
+  for (int i=0; i<=len; i++) {
     sendByte((byte) s[i]);
     if (!connected) return;
   }
-
+  
 }
 
 
@@ -132,26 +131,24 @@ void onMatConnect() {
   byte tempKey[80];
   byte permKey[80];
   //shoe sends REQUEST_ID_MESSAGE
-
-  Serial.println("request challenge");
-
+  
   getByteBuffer(ID, 80); //get ID
+  
+  getByteBuffer(tempKey, 80);//get tempkey
+ 
+  getByteBuffer(permKey, 80);//get permkey
+  
+  Serial.print("ID is:");
   Serial.println(String((char*)ID));
 
-  getByteBuffer(tempKey, 80);//get tempkey
+  Serial.print("Temp Key is:");
   Serial.println(String((char*)tempKey));
 
-  getByteBuffer(permKey, 80);//get permkey
+  Serial.print("Perm Key is:");
   Serial.println(String((char*)permKey));
 
-  /**
-     Things Mat should do:
-      ~"log \n" next line will have pc client print to console
-      ~"request challenge \n" to request challenge
-      ~next 3 things are uid \n, permpk \n, temppk\n
-  */
-
-
+  
+  
 }
 
 /* ************************** LOOP FOR MAT ******************************** */
@@ -162,12 +159,12 @@ void matLoop() {
     getByteBuffer(buffer, 80);
     if (!connected) return; // Discard corrupted byte
     //Serial.print("B is: ");
-    for (int i = 0; i < 80 && buffer[i] != '\0'; i++)
+    for (int i=0; i<80 && buffer[i]!='\0'; i++)
       Serial.print((char) buffer[i]);
     //Serial.println("Receiving...");
     updateConnection();
   } else {
-    while (!connected) {
+    while(!connected) {
       updateConnection();
       //Serial.println("Not connected...");
     }
@@ -177,21 +174,21 @@ void matLoop() {
 
 /* ********************* LOOP FOR SHOE ************************************ */
 void shoeLoop() {
-  if (connected) {
-    sendByteBuffer("Hello, World!\n");
-    Serial.println("Sending...");
-    updateConnection();
-  } else {
-    Serial.println("Going from connected to not.");
-    delay(10);
-    while (!connected) {
-      Serial.println("Not connected...");
-      updateConnection();
-    }
+    if (connected) {
+      sendByteBuffer("Hello, World!\n");
+      Serial.println("Sending...");
+      updateConnection();    
+    } else {
+      Serial.println("Going from connected to not.");
+      delay(10);
+      while(!connected) { 
+        Serial.println("Not connected...");
+        updateConnection();
+      }
 
-    Serial.println("Connected... delaying");
-    delay(5000);
-    onShoeConnect();
+      Serial.println("Connected... delaying");
+      delay(1000);
+      onShoeConnect();
   }
 }
 

@@ -7,7 +7,7 @@ int outClock = 10;
 int outPin = 11;
 int connIn = 12;
 int connOut = 13;
-char SHOE = 1;
+char SHOE = 0;
 byte x = 42;
 
 const int uniqueID = 1337;
@@ -126,10 +126,13 @@ void onMatConnect() {
   byte request[80];
   getByteBuffer(request, 80);
   byte id[80];
-  strcpy((char*)id, (char*)request); 
-  
-  Serial.println(String((char*)));
-  
+  if (String((char*)request) == REQUEST_ID_MESSAGE) {  
+    Serial.print("requested id\n");
+    getByteBuffer(id, 80);
+    strcpy((char*)id, (char*)request);       
+    Serial.println(String((char*)id));
+   
+  }
   getByteBuffer(request, 80);
   Serial.println(String((char*)request));
   if (String((char*)request) == REQUEST_CHALLENGE_MESSAGE) {

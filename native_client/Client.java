@@ -7,6 +7,10 @@ public class Client {
         WebClient webClient = new WebClient(baseUrl);
         webClient.connect();
         System.out.println(baseUrl+"newSession/"+webClient.getMyToken());
+
+        // used for testing
+        ConsoleManager consoleManager = new ConsoleManager(webClient);
+        consoleManager.listen();
     }
 
 }

@@ -8,9 +8,11 @@
 
 
 <script>
-function signup(username, password) {
-    console.log("Your in has been logged, BIATCH");
-}
+
+    socket.on('user_account_name_taken', function() {
+       console.log("user account name is taken");
+       alert("Account name already taken"); <!-- TODO replace with html element activating-->
+    });
 
 </script>
 

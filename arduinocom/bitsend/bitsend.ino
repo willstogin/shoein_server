@@ -5,7 +5,7 @@ int outClock = 10;
 int outPin = 11;
 int connIn = 12;
 int connOut = 13;
-char SHOE = 1;
+char SHOE = 0;
 byte x = 42;
 
 void setup() {
@@ -28,12 +28,23 @@ void loop() {
     matLoop(); 
   }
 }
+/* ************************* CHECKING FOR A CONNECTION *********************** */
+
+bool updateConnection {
+   connected = (digitalRead(connIn) == HIGH);
+}
 
 /* ********************* SENDING AND RECEIVING BITS AND BYTES  *************** */
 // Reads the pin and writes the bit to the rightmost bit of char, returning result
 byte getBit(byte b) {
-  while(digitalRead(inClock) == LOW);
-  while(digitalRead(inClock) == HIGH);
+  while(digitalRead(inClock) == LOW) {
+    updateConnection();
+    if(connected) break;
+  }
+  while(digitalRead(inClock) == HIGH) {
+    updateConnection();
+    if(connected) break;
+  }
   return (b << 1) | ((digitalRead(inPin) == HIGH) ? 1 : 0);  
 }
 
@@ -67,10 +78,15 @@ void sendByte(byte b) {
 void matLoop() {
   if (connected) {
     byte b = getByte();
-    Serial.println("B is: " + b);
-    connected = (digitalRead(connIn) == HIGH);
+    Serial.print("B is: ");
+    Serial.println(b);
+    Serial.println("Receiving...");
+    updateConnection();
   } else {
-    while(!connected) connected = (digitalRead(connIn) == HIGH);
+    while(!connected) {
+      updateConnection();
+      Serial.println("Not connected...");
+    }
   }
 }
 
@@ -85,7 +101,7 @@ void shoeLoop() {
       delay(10);
       while(!connected) { 
         Serial.println("Not connected...");
-        connected = (digitalRead(connIn) == HIGH);
+        updateConnection();
       }
       Serial.println("Connected... delaying");
       delay(5000);

@@ -69,12 +69,20 @@ app.get("/newSession/:token", function(req, res) {
 
 app.post("/login", passport.authenticate('local',
                                          {successRedirect: "/welcome.html",
-                                          failureRedirect: "/static/loginerr.html" }));
+                                          failureRedirect: "/static/login.html" }));
 
 app.set("view engine", "pug");
 app.get("/welcome.html", function(req, res) {
     if (!req.user) {
         // TODO check if the request has been authorized by the shoe device.
+        if (req.session.clientToken) {
+            var user = shoe_manager.get_device_user_if_authenticated(req.session.clientToken);
+            if (user)
+                return req.login(user,function(err) {
+                    if (err) return console.log(err);
+                    return res.redirect("/welcome.html");
+                });
+        }
         return res.redirect("/static/login.html");
     }
     var user = req.user;
@@ -136,7 +144,8 @@ app.get("/request_challenge", function(req, res) {
   };
 
   function badDevice(){
-    // TODO (low priority)
+      // TODO (low priority)
+      res.send("the device was bad");
   };
 
   var uid = req.query.uid;
@@ -154,7 +163,7 @@ app.get("/response", function(req, res) {
     console.log("route /response was contacted with token: " + req.query.token);
 
     function success() {
-        // TODO log client in
+        socket_manager.logUserIn(req.query.token);
         res.send("authorization succeeded!");
     }
 
@@ -167,11 +176,10 @@ app.get("/response", function(req, res) {
     var success_cb = success;
     var failure_cb = failure;
     var uid = req.query.uid;
-    var perm_response = req.body.perm_response;
-    var temp_response = req.body.temp_response;
+    var perm_response = req.query.perm_response;
+    var temp_response = req.query.temp_response;
 
     shoe_manager.check_response(uid, perm_response, temp_response, success_cb, failure_cb);
-    res.send("response contacted");//empty response
 });
 
 app.get("/shoeDisconnected", function(req,res) {

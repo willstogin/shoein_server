@@ -12,6 +12,19 @@
 
     var socket = io();
 
+    socket.on('welcome', function(data) {
+       console.log("I got welcomed!");
+    });
+
+    socket.on('user_enter_password', function() {
+       console.log("password must be entered");
+       alert("you must enter a password");
+    });
+
+    socket.on('logUserIn', function() {
+        window.location = "/welcome.html";
+    });
+
     socket.on('user_account_name_taken', function() {
        console.log("user account name is taken");
        alert("Account name already taken"); <!-- TODO replace with html element activating-->

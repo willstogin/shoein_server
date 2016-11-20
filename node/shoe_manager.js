@@ -11,6 +11,10 @@ function ShoeDevice(uid,perm_pk,temp_pk) {
     // Compare these in check_response
     this.required_perm_response = "";
     this.required_temp_response = "";
+    // The new temp_pk (to set if the response matches)
+    this.new_temp_pk = temp_pk;
+    // Determines whether the device successfully authenticated
+    this.auth_successful = false;
 }
 
 var shoeDevices = {};
@@ -21,9 +25,9 @@ module.exports = {
     /*
       list of callbacks
       
-      + password_cb() // called when perm_pk matches, but tmp_pk changed or new uid
+      + password_cb() // called when (perm_pk matches, but tmp_pk changed) or (new uid) or (shoeDevice.user==null)
       +   load user login page
-      +   when user logs in, 
+      +   when user logs in
       + challenge_cb(perm_challenge,temp_challenge) // called when perm_pk and temp_pk match
       + failure_cb(err) // called when perm_pk does not match
       +   serve error (device not recognized)
@@ -33,16 +37,25 @@ module.exports = {
         if (uid in shoeDevices) {
             // The device has connected before.
             var shoeDevice = shoeDevices[uid];
+            // Reset the authentication state of the shoe
+            shoeDevice.auth_successful = false;
             if (shoeDevice.perm_pk === perm_pk) {
                 // The device is legitimate.
+                if (!shoeDevice.user) {
+                    // The device is not associated to a user.
+                    shoeDevice.new_temp_pk = temp_pk;
+                    return password_cb();
+                }
                 if (shoeDevice.temp_pk == temp_pk) {
-                    // The device hasn't been removed since the last time
+                    // The shoe hasn't been taken off since the last time
                     // TODO SECURITY build the challenge
                     shoeDevice.required_perm_response = "aaa";
                     shoeDevice.required_temp_response = "bbb";
+                    shoeDevice.new_temp_pk = temp_pk;
                     challenge_cb("aaa","bbb");
                 } else {
-                    // The device was removed since the last time
+                    // The shoe was taken off since the last time
+                    shoeDevice.new_temp_pk = temp_pk;
                     password_cb();
                 }
             } else {
@@ -61,8 +74,15 @@ module.exports = {
     check_response: function(uid,perm_response,temp_response,success_cb,failure_cb) {
         if (uid in shoeDevices) {
             var shoeDevice = shoeDevices[uid];
+            console.log(shoeDevice.required_perm_response);
+            console.log(shoeDevice.required_temp_response);
+            console.log(perm_response);
+            console.log(temp_response);
             if ((perm_response === shoeDevice.required_perm_response)
                 && (temp_response === shoeDevice.required_temp_response)) {
+                // since the response is valid, set the new temp pk
+                shoeDevice.temp_pk = shoeDevice.new_temp_pk;
+                shoeDevice.auth_successful = true;
                 success_cb(shoeDevice.user);
             } else {
                 failure_cb();
@@ -74,6 +94,16 @@ module.exports = {
     },
 
     shoe_disconnected: function(token) {
+        if (token in token_to_uid_map) {
+            var uid = token_to_uid_map[token];
+            if (uid in shoeDevices) {
+                var shoeDevice = shoeDevices[uid];
+                if (shoeDevice) {
+                    // Reset the authentication state of the shoe
+                    shoeDevice.auth_successful = false;
+                }
+            }
+        }
         token_to_uid_map[token] = null;
     },
     
@@ -84,10 +114,26 @@ module.exports = {
             var uid = token_to_uid_map[token];
             if (uid in shoeDevices) {
                 var shoeDevice = shoeDevices[uid];
-                if (shoeDevice)
+                if (shoeDevice) {
+                    shoeDevice.temp_pk = shoeDevice.new_temp_pk;
                     shoeDevice.user = user;
+                }
             }
         }
+    },
+
+    // Determines whether a user can log in based on the device being connected.
+    get_device_user_if_authenticated: function(token) {
+        if (token in token_to_uid_map) {
+            var uid = token_to_uid_map[token];
+            if (uid in shoeDevices) {
+                var shoeDevice = shoeDevices[uid];
+                if (shoeDevice)
+                    if (shoeDevice.auth_successful)
+                        return shoeDevice.user;
+            }
+        }
+        return null;
     },
     
 };

@@ -58,6 +58,15 @@ module.exports = function(sio) {
         }
     }
 
+    exports.logUserIn = function(client_token) {
+        if (client_token in sockets) {
+            var socket = sockets[client_token];
+            socket.emit("logUserIn");
+        } else {
+            console.log("the key " + client_token + " is not in the list of sockets");
+        }
+    }
+
     // TODO SECURITY improve the unique token
     var counter = 0;
     exports.getUniqueToken = function() {

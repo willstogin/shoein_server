@@ -1,3 +1,5 @@
+#include <string.h>
+
 bool connected = false;
 int inClock = 8;
 int inPin = 9;
@@ -131,32 +133,32 @@ void onShoeConnect() {
 
 void onMatConnect() {
   byte request[80];
-  String ID;
-  String tempKey;
-  String permKey;
+  byte ID[80];
+  byte tempKey[80];
+  byte permKey[80];
   //shoe sends REQUEST_ID_KEY
   if(String((char*) request) == REQUEST_ID_KEY) {
     getByteBuffer(request, 80);
-    ID = String((char*) request); //Gets and saves the request should be ID
+    strcpy((char*)ID, (char*)request); //Gets and saves the request should be ID
   }
   
   if(String((char*) request) == REQUEST_TMPKEY_KEY) {
     getByteBuffer(request, 80);
-    tempKey = String((char*) request); //Gets and saves the request should be tempKey
+    strcpy((char*)tempKey, (char*)request); //Gets and saves the request should be tempKey
   }
   
   if(String((char*) request) == REQUEST_PERMKEY_KEY) {
     getByteBuffer(request, 80);
-    permKey = String((char*) request); //Gets and saves the request should be permKey
+    strcpy((char*)permKey, (char*)request); //Gets and saves the request should be permKey
   }
   Serial.print("ID is: ");
-  Serial.println(ID);
+  Serial.println(String((char*)ID));
 
   Serial.print("Temp Key is: ");
-  Serial.println(tempKey);
+  Serial.println(String((char*)tempKey));
 
   Serial.print("Perm Key is: ");
-  Serial.println(permKey);
+  Serial.println(String((char*)permKey));
   
   //send to server at some point
 

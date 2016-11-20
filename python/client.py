@@ -21,11 +21,12 @@ def readline():
         inputBuffer = parts[1]
     else:
         inputBuffer = ""
-    return parts[0]
+    return parts[0][:-1]
 
 def sendline(line):
-    for b in bytearray(line,"UTF-8"):
-        ser.write(b)
+    ser.write(bytearray(line,"UTF-8"))
+#    for b in bytearray(line,"UTF-8"):
+#        ser.write(b)
 
 shoe_uid = ""
 def event_loop():
@@ -43,11 +44,11 @@ def event_loop():
             else:
                 print "request challenge: {0} {1} {2}".format(shoe_uid,perm_pk,temp_pk)
                 webclient.requestChallenge(shoe_uid,perm_pk,temp_pk)
-                if (permChallenge!="" and tempChallenge!=""):
-                    sendline(permChallenge)
-                    sendline(tempChallenge)
+                if (webclient.permChallenge!="" and webclient.tempChallenge!=""):
+                    sendline(webclient.permChallenge)
+                    sendline(webclient.tempChallenge)
                 else:
-                    sendline("garbage")
+                    sendline("discard")
         elif (line=="send response"):
             perm_response = readline()
             temp_response = readline()
@@ -72,5 +73,7 @@ if __name__ == "__main__" :
         print "Device not found: {0}".format(sys.argv[1])
         exit(0)
 
+    webclient.connect()
+    print "{0}/newSession/{1}".format(webclient.baseUrl,webclient.myToken)
     event_loop()
     

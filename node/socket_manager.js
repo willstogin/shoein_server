@@ -49,6 +49,15 @@ module.exports = function(sio) {
         }
     }
 
+    exports.forceUserToLogOut = function(client_token) {
+        if (client_token in sockets) {
+            var socket = sockets[client_token];
+            socket.emit("forceLogout");
+        } else {
+            console.log("the key" + client_token +" Is not in the list of sockets");
+        }
+    }
+
     // TODO SECURITY improve the unique token
     var counter = 0;
     exports.getUniqueToken = function() {

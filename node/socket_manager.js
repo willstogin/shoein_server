@@ -36,7 +36,7 @@ module.exports = function(sio) {
             var socket = sockets[client_token];
             socket.emit("user_account_name_taken");
         } else {
-            console.log("the key" + client_token +" Is not in the list of sockets");
+            console.log("tellUserAccountIsTaken() - the key" + client_token +" Is not in the list of sockets");
         }
     };
 
@@ -44,6 +44,15 @@ module.exports = function(sio) {
         if (client_token in sockets) {
             var socket = sockets[client_token];
             socket.emit("password_incorrect");
+        } else {
+            console.log("the key" + client_token +" Is not in the list of sockets");
+        }
+    }
+
+    exports.forceUserToLogOut = function(client_token) {
+        if (client_token in sockets) {
+            var socket = sockets[client_token];
+            socket.emit("forceLogout");
         } else {
             console.log("the key" + client_token +" Is not in the list of sockets");
         }

@@ -103,14 +103,20 @@ app.post("/logout", function(req, res) {
 });
 
 
+//==============================================================================
 // called by java client
+//==============================================================================
+
+
+
+
 app.get("/newClient", function(req, res) {
   console.log("route /newClient was contacted");
   res.send(socket_manager.getUniqueToken());
 });
 
-// called by java client
-app.post("/request_challenge", function(req, res) {
+
+app.get("/request_challenge", function(req, res) {
   var token = req.query.token;
   console.log("route /request_challenge was contacted with token: " + token);
 
@@ -137,7 +143,7 @@ app.post("/request_challenge", function(req, res) {
 
 });
 
-// called by java client
+
 app.post("/response", function(req, res) {
   function success() {
     // TODO log client in
@@ -157,10 +163,11 @@ app.post("/response", function(req, res) {
   shoe_manager.check_response(uid, perm_response, temp_response, success_cb, failure_cb)
 });
 
-// called by java client
-app.get("/shoeDisconnected", function(req,res) {
-    // TODO
+app.post("/shoeDisconnected", function(req,res) {
+    socket_manager.forceUserToLogOut(res.query.token);
+    req.logout();
 });
+
 
 
 

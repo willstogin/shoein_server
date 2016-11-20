@@ -63,7 +63,7 @@ byte getByte() {
   byte accumulator = '\0';
   for (int i=0; i<8; i++) {
     accumulator = getBit(accumulator);
-    if (connected) return -1;
+    if (!connected) return -1;
   }
   return accumulator;
 }
@@ -75,6 +75,7 @@ void sendByte(byte b) {
     updateConnection();
     if (connected) return;
   }
+  Serial.println(b);
 }
 
 /* ************************** LOOP FOR MAT ******************************** */

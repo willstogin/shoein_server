@@ -13,6 +13,9 @@ byte permanentKeyPair[80];
 byte tempKeyPair[80];
 
 const String REQUEST_CHALLENGE_MESSAGE = "I would like a challenge, thank you.";
+const String REQUEST_ID_KEY = "ID";
+const String REQUEST_TMPKEY_KEY = "tempKey";
+const String REQUEST_PERMKEY_KEY = "permKey";
 
 
 void setup() {
@@ -108,6 +111,13 @@ void sendByteBuffer(String s) {
 /* *************************** CONNECTION HANDLER **************************** */
 void onShoeConnect() {
   // Provide id, temp and perm keys
+  sendByteBuffer(REQUEST_ID_KEY);
+  sendByteBuffer("my id!");
+  sendByteBuffer(REQUEST_TMPKEY_KEY);
+  sendByteBuffer("my temp key!");
+  sendByteBuffer(REQUEST_PERMKEY_KEY);
+  sendByteBuffer("my perm key!");
+  
   
   // Request a challenge
   sendByteBuffer(REQUEST_CHALLENGE_MESSAGE);
@@ -161,9 +171,9 @@ void shoeLoop() {
         Serial.println("Not connected...");
         updateConnection();
       }
-      onShoeConnect();
       Serial.println("Connected... delaying");
       delay(5000);
+      onShoeConnect();
   }
 }
 

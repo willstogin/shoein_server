@@ -31,7 +31,7 @@ void loop() {
 }
 /* ************************* CHECKING FOR A CONNECTION *********************** */
 
-bool updateConnection() {
+void updateConnection() {
    connected = (digitalRead(connIn) == HIGH);
 }
 
@@ -84,6 +84,15 @@ void sendByte(byte b) {
   Serial.println(b);
 }
 
+void sendByteBuffer(String s) {
+  int len = s.length();
+  for (int i=0; i<=len; i++) {
+    sendByte((byte) s[i]);
+    if (!connected) return;
+  }
+  
+}
+
 /* ************************** LOOP FOR MAT ******************************** */
 void matLoop() {
   if (connected) {
@@ -104,7 +113,7 @@ void matLoop() {
 /* ********************* LOOP FOR SHOE ************************************ */
 void shoeLoop() {
     if (connected) {
-      sendByte(x);
+      sendByteBuffer("Hello, World!");
       Serial.println("Sending...");
       updateConnection();    
     } else {

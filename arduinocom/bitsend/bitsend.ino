@@ -5,6 +5,8 @@ int outClock = 10;
 int outPin = 11;
 int connIn = 12;
 int connOut = 13;
+char SHOE = 1;
+byte x = 42;
 
 void setup() {
   // put your setup code here, to run once:
@@ -17,9 +19,39 @@ void setup() {
   pinMode(connOut, OUTPUT);
   pinMode(connIn, INPUT);
   digitalWrite(connOut, HIGH);
-  Serial.println("Success in setup");
 }
 
+void loop() {
+  if (SHOE) {
+    shoeLoop();
+  } else {
+    matLoop(); 
+  }
+}
+
+/* ************************** LOOP FOR MAT ******************************** */
+void matLoop() {
+  if (connected) {
+    byte b = getByte();
+    Serial.println("B is: " + b);
+    connected = (digitalRead(connIn) == HIGH);
+  } else {
+    while(!connected) connected = (digitalRead(connIn) == HIGH);
+  }
+}
+
+/* ********************* LOOP FOR SHOE ************************************ */
+void shoeLoop() {
+    if (connected) {
+      sendByte(x);
+      connected = (digitalRead(connIn) == HIGH);    
+    } else {
+      while(!connected) { connected = (digitalRead(connIn) == HIGH);}
+      delay(5000);
+  }
+}
+
+/* ********************* SENDING AND RECEIVING BITS AND BYTES  *************** */
 // Reads the pin and writes the bit to the rightmost bit of char, returning result
 byte getBit(byte b) {
   while(digitalRead(inClock) == LOW);
@@ -50,32 +82,5 @@ void sendByte(byte b) {
   byte toSend = b;
   for (int i=0; i<8; i++) {
     toSend = sendBit(toSend);
-  }
-}
-
-byte x = 42;
-char writer = 1;
-void loop() {
-  Serial.println("Looping");
-  if (writer && !connected) {
-    while(!connected) {
-      Serial.println("Not connected");
-      connected = (digitalRead(connIn) == HIGH);
-    }
-    Serial.println("Connected... Delaying.");
-    delay(5000);
-  } else if (writer && connected) {
-    Serial.println("Sending because we are connected");
-    sendByte(x);
-    connected = (digitalRead(connIn) == HIGH);
-  } else if (!writer && !connected) {
-    while(!connected){
-      connected = (digitalRead(connIn) == HIGH);
-    }
-  } else {
-    byte b = getByte();
-    Serial.print("B is: ");
-    Serial.println(b);
-    connected = (digitalRead(connIn) == HIGH);
   }
 }

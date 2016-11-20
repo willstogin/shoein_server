@@ -84,6 +84,16 @@ void sendByte(byte b) {
   Serial.println(b);
 }
 
+void getByteBuffer(byte* buffer, int size) {
+  int i = 0;
+  byte curByte = getByte();
+  buffer[i] = curByte;
+  while (connected && i < size && curByte != '\0') {
+    curByte = getByte();
+    buffer[++i] = curByte;
+  }
+}
+
 void sendByteBuffer(String s) {
   int len = s.length();
   for (int i=0; i<=len; i++) {
@@ -96,10 +106,13 @@ void sendByteBuffer(String s) {
 /* ************************** LOOP FOR MAT ******************************** */
 void matLoop() {
   if (connected) {
-    byte b = getByte();
+    //byte b = getByte();
+    byte buffer[80];
+    getByteBuffer(buffer, 80);
     if (!connected) return; // Discard corrupted byte
     Serial.print("B is: ");
-    Serial.println(b);
+    for (int i=0; i<80 && buffer[i]!='\0'; i++)
+      Serial.print((char) buffer[i]);
     Serial.println("Receiving...");
     updateConnection();
   } else {

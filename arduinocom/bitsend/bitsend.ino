@@ -129,8 +129,7 @@ void onMatConnect() {
   byte id[80];
   if (String((char*)request) == REQUEST_ID_MESSAGE) {  
     Serial.print("requested id\n");
-    getByteBuffer(id, 80);
-    strcpy((char*)id, (char*)request);       
+    getByteBuffer(id, 80); //gets ID
     Serial.println(String((char*)id));
    
   }
@@ -158,6 +157,7 @@ void matLoop() {
       updateConnection();
       Serial.println("Not connected...");
     }
+    onMatConnect();
   }
 }
 

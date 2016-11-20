@@ -64,10 +64,13 @@ void loop() {
     sendByte(x);
     connected = (digitalRead(connIn) == HIGH);
   } else if (!writer && !connected) {
-    while(!connected) connected = (digitalRead(connIn) == HIGH);
+    while(!connected){
+      connected = (digitalRead(connIn) == HIGH);
+    }
   } else {
     byte b = getByte();
-    Serial.println("B is: " + b);
+    Serial.print("B is: ");
+    Serial.println(b);
     connected = (digitalRead(connIn) == HIGH);
   }
 }

@@ -25,6 +25,12 @@ var session_middleware = session({
 });
 app.use( session_middleware );
 
+// Users
+// TODO
+//var User = require('./users');
+
+// passport
+// TODO
 
 // sockets
 var sio = require("socket.io")(httpServer);
@@ -40,21 +46,6 @@ const pug = require('pug');
 // Our imports
 var shoe_manager = require('./shoe_manager');
 var socket_manager = require('./socket_manager')(sio);
-
-//var routes = require('./routes')
-//=====code=====
-
-class User {
-  constructor(name, password, token) {
-      console.log("creating new user")
-      this.name = name;
-      this.password = password;
-      this.token = token;
-  }
-}
-
-var list_of_users = [];
-
 
 
 /**************
@@ -88,6 +79,13 @@ app.post("/logout", function(req, res) {
 });
 
 
+// called by java client
+app.get("/newClient", function(req, res) {
+  console.log("route /newClient was contacted");
+  res.send(socket_manager.getUniqueToken());
+});
+
+// called by java client
 app.post("/request_challenge", function(req, res) {
   var token = req.query.token;
   console.log("route /request_challenge was contacted with token: " + token);
@@ -98,10 +96,11 @@ app.post("/request_challenge", function(req, res) {
   };
 
   function sendChallenge(permChallenge, tempChallenge) {
-    //TODO respond with challenges
+      res.send(""+permChallenge+","+tempChallenge);
   };
+    
   function badDevice(){
-    //TODO send message saying 'this device is invalid'
+    // TODO (low priority)
   };
 
   var uid = req.query.uid;
@@ -114,13 +113,14 @@ app.post("/request_challenge", function(req, res) {
 
 });
 
+// called by java client
 app.post("/response", function(req, res) {
   function success() {
-    //tell the browser user they succeeded
+    // TODO log client in
   }
 
   function failure() {
-    //tell the browser user they failed
+    // TODO (low priority) tell the browser user they failed
   }
 
   var success_cb = success;
@@ -133,10 +133,9 @@ app.post("/response", function(req, res) {
   shoe_manager.check_response(uid, perm_response, temp_response, success_cb, failure_cb)
 });
 
-
-app.get("/newClient", function(req, res) {
-  console.log("route /newClient was contacted");
-  res.send(socket_manager.getUniqueToken());
+// called by java client
+app.get("/shoeDisconnected"), function(req,res) {
+    // TODO 
 });
 
 app.get("/newSession/:token", function(req, res) {

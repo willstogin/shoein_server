@@ -1,16 +1,23 @@
-
+bool connected = false;
 int inClock = 8;
 int inPin = 9;
 int outClock = 10;
 int outPin = 11;
+int connIn = 12;
+int connOut = 13;
 
 void setup() {
   // put your setup code here, to run once:
+  //i made a change
   Serial.begin(9600);
   pinMode(outPin, OUTPUT);
   pinMode(inPin, INPUT);
   pinMode(inClock, INPUT);
   pinMode(outClock, OUTPUT);
+  pinMode(connOut, OUTPUT);
+  pinMode(connIn, INPUT);
+  digitalWrite(connOut, HIGH);
+  Serial.println("Success in setup");
 }
 
 // Reads the pin and writes the bit to the rightmost bit of char, returning result
@@ -49,15 +56,23 @@ void sendByte(byte b) {
 byte x = 42;
 char writer = 1;
 void loop() {
-  delay(10000);
-  if (writer) {
+  Serial.println("Looping");
+  if (writer && !connected) {
+    while(!connected) {
+      Serial.println("Not connected");
+      connected = (digitalRead(connIn) == HIGH);
+    }
+    Serial.println("Connected... Delaying.");
+    delay(5000);
+  } else if (writer && connected) {
+    Serial.println("Sending because we are connected");
     sendByte(x);
-    Serial.print("Sent: ");
-    Serial.print(x);
-    Serial.print("\n");
+    connected = (digitalRead(connIn) == HIGH);
+  } else if (!writer && !connected) {
+    while(!connected) connected = (digitalRead(connIn) == HIGH);
   } else {
     byte b = getByte();
-    Serial.print(b);
-    Serial.print("\n");
+    Serial.println("B is: " + b);
+    connected = (digitalRead(connIn) == HIGH);
   }
 }

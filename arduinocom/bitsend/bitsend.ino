@@ -118,7 +118,7 @@ void onShoeConnect() {
 
   sendByteBuffer("permkey");
 
-  sendByteBuffer("\n");
+  //sendByteBuffer("\n");
   // Await a response
   byte buffer[80];
   getByteBuffer(buffer, 80);
@@ -187,7 +187,7 @@ void shoeLoop() {
       }
 
       Serial.println("Connected... delaying");
-      delay(1000);
+      delay(2000);
       onShoeConnect();
   }
 }

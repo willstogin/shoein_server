@@ -26,8 +26,7 @@ var session_middleware = session({
 app.use( session_middleware );
 
 // Users
-// TODO
-//var User = require('./users');
+var User = require('./users')();
 
 // passport
 // TODO
@@ -57,31 +56,36 @@ app.get("/", function(req, res) {
   res.redirect("/static/login.html")
 });
 
-app.get("/welcome.html", function() {
-  const compiledWelcome =  pug.compileFile('templates/welcome.pug');
-  console.log("writing to /dynamic/welcome.html with currentUser " + user.name);
-  fileSystem.writeFile( __dirname + '/dynamic/welcome.html', compiledWelcome({user: user.name}), (err) => {
-    console.log(err)
-  });
-  res.render("/dynamic/welcome.html")
+app.get("/welcome.html", function(req, res) {
+    var user = req.user;
+    const compiledWelcome =  pug.compileFile('templates/welcome.pug');
+    console.log("writing to /dynamic/welcome.html with currentUser " + user.name);
+    fileSystem.writeFile( __dirname + '/dynamic/welcome.html', compiledWelcome({user: user.username}), (err) => {
+        console.log(err)
+    });
+    res.render("/dynamic/welcome.html")
 });
 
 //create an account and redirect to the welcome screen
 app.post("/signup", function(req, res) {
-  console.log(req.body);
-  var username = req.body.username;
-  var password = req.body.password;
-
-  var user = new User(username, password, req.query.token)
-  list_of_users.push(user);
-
-  res.redirect("/welcome.html");
+    var username = req.body.username;
+    var password = req.body.password;
+    
+    if (!User.userExists(username)) {
+        var user = User.makeUser(username,password);
+        req.login(user, function(err) {
+            if (err) console.log(err);
+            res.redirect("/welcome.html");
+        });
+    } else {
+        // TODO send a message to the client that the username exists
+        res.send("");
+    }
 });
 
-
-
 app.post("/logout", function(req, res) {
-
+    req.logout();
+    res.redirect("/static/login.html");
 });
 
 

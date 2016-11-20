@@ -1,7 +1,8 @@
 
 import urllib2
 
-baseUrl = "http://localhost:8080"
+#baseUrl = "http://localhost:8080"
+baseUrl = "http://ziggypop.mooo.com:8081"
 
 myToken = ""
 permChallenge = ""
@@ -18,7 +19,7 @@ def requestChallenge(uid,perm_pk,temp_pk):
     print "Requesting challenge."
     url = "{0}/request_challenge?uid={1}&perm_pk={2}&temp_pk={3}&token={4}".format(baseUrl,uid,perm_pk,temp_pk,myToken)
     res = urllib2.urlopen(url).read()
-    print "FROM SERVER".format(res)
+    print "FROM SERVER: {0}".format(res)
     if (',' in res):
         (permChallenge,tempChallenge) = res.split(',')
     else:

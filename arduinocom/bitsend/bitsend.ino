@@ -17,6 +17,7 @@ void setup() {
   pinMode(connOut, OUTPUT);
   pinMode(connIn, INPUT);
   digitalWrite(connOut, HIGH);
+  Serial.println("Success in setup");
 }
 
 // Reads the pin and writes the bit to the rightmost bit of char, returning result
@@ -28,7 +29,7 @@ byte getBit(byte b) {
 
 // Consumes the leftmost bit and returns the resulting char
 byte sendBit(byte b) {
-  int delay = 1000; // 100 corresponds to 9600 baud
+  int delay = 100000; // 100 corresponds to 9600 baud
   digitalWrite(outClock, HIGH);
   digitalWrite(outPin, ((b & 0x80) ? HIGH : LOW));
   delayMicroseconds(delay/2); 
@@ -52,22 +53,29 @@ void sendByte(byte b) {
   }
 }
 
-
-byte x = 1;
-char writer = 0;
+byte x = 42;
+char writer = 1;
 void loop() {
+  Serial.println("Looping");
   if (writer && !connected) {
-    while(!connected) connected = (digitalRead(connIn) == HIGH);
+    while(!connected) {
+      Serial.println("Not connected");
+      connected = (digitalRead(connIn) == HIGH);
+    }
+    Serial.println("Connected... Delaying.");
     delay(5000);
   } else if (writer && connected) {
-
+    Serial.println("Sending because we are connected");
     sendByte(x);
     connected = (digitalRead(connIn) == HIGH);
   } else if (!writer && !connected) {
-    while(!connected) connected = (digitalRead(connIn) == HIGH);
+    while(!connected){
+      connected = (digitalRead(connIn) == HIGH);
+    }
   } else {
     byte b = getByte();
-    Serial.println("B is: " + b);
+    Serial.print("B is: ");
+    Serial.println(b);
     connected = (digitalRead(connIn) == HIGH);
   }
 }

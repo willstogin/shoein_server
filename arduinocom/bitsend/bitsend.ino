@@ -7,7 +7,7 @@ int outClock = 10;
 int outPin = 11;
 int connIn = 12;
 int connOut = 13;
-char SHOE = 0;
+char SHOE = 1;
 byte x = 42;
 
 const int uniqueID = 1337;
@@ -138,16 +138,19 @@ void onMatConnect() {
   byte permKey[80];
   //shoe sends REQUEST_ID_KEY
   if(String((char*) request) == REQUEST_ID_KEY) {
+    Serial.println("ID key recognized");
     getByteBuffer(request, 80);
     strcpy((char*)ID, (char*)request); //Gets and saves the request should be ID
   }
   
   if(String((char*) request) == REQUEST_TMPKEY_KEY) {
+    Serial.println("Tmpkey key recognized");
     getByteBuffer(request, 80);
     strcpy((char*)tempKey, (char*)request); //Gets and saves the request should be tempKey
   }
   
   if(String((char*) request) == REQUEST_PERMKEY_KEY) {
+    Serial.println("Permkey key recognized");
     getByteBuffer(request, 80);
     strcpy((char*)permKey, (char*)request); //Gets and saves the request should be permKey
   }

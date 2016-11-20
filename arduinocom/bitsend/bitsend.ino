@@ -1,5 +1,6 @@
 #include <string.h>
 
+
 bool connected = false;
 int inClock = 8;
 int inPin = 9;
@@ -167,8 +168,7 @@ void onMatConnect() {
   byte id[80];
   if (String((char*)request) == REQUEST_ID_MESSAGE) {  
     Serial.print("requested id\n");
-    getByteBuffer(id, 80);
-    strcpy((char*)id, (char*)request);       
+    getByteBuffer(id, 80); //gets ID
     Serial.println(String((char*)id));
    
   }
@@ -213,6 +213,7 @@ void shoeLoop() {
         Serial.println("Not connected...");
         updateConnection();
       }
+
       Serial.println("Connected... delaying");
       delay(5000);
       onShoeConnect();

@@ -2,6 +2,7 @@ doctype html
 html
   head
     link(rel='stylesheet', type='text/css', href='/static/styles.css')
+    script(src='/socket.io/socket.io.js')                       
   body
     div(style='\
     background-color:red;\
@@ -18,7 +19,7 @@ html
       h1 Welcome
       p You are logged in as #{user}.
       form(action='/logout', method='post')
-        button(type='submit')  Log Out
+        button(id='logout_btn',type='submit')  Log Out
     div(style='text-align: center; width: 100%; margin-top: 1%;')
       svg#Layer_2(version='1.1', xmlns='http://www.w3.org/2000/svg', xmlns:xlink='http://www.w3.org/1999/xlink', x='0px', y='0px', style='width:30%; height:30%', width='150px', height='150px', viewbox='5.02 -3.954 150 150', enable-background='new 5.02 -3.954 150 150', xml:space='preserve')
         g#spinner
@@ -83,5 +84,6 @@ html
       socket.on('forceLogout', function(data) {
          console.log("I have been forced to logout due to an absence of authentication");
          //redirect to login
-         window.location.href = "/static/login.html";
+         //window.location.href = "/static/login.html";
+         document.getElementById("logout_btn").click();
       });

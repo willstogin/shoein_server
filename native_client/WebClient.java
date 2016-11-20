@@ -101,7 +101,7 @@ public class WebClient {
 
           URL url = new URL(urlString);
           HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-          conn.setRequestMethod("POST");
+          conn.setRequestMethod("GET"); //Actually POST
 
           BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
           String line;
@@ -120,16 +120,16 @@ public class WebClient {
     // Log the user out when the device is disconnected
     public void logout() {
         System.out.println("Logging user out.");
-        
+
         try {
           StringBuilder result = new StringBuilder();
           String urlString =  new String(
               this.baseUrl + "shoeDisconnected"+
-              "&token="+this.myToken);
+              "?token="+this.myToken);
 
           URL url = new URL(urlString);
           HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-          conn.setRequestMethod("POST");
+          conn.setRequestMethod("GET"); //Actually POST
 
           BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
           String line;

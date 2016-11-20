@@ -69,14 +69,28 @@ app.get("/newSession/:token", function(req, res) {
 
 app.post("/login", passport.authenticate('local',
                                          {successRedirect: "/welcome.html",
-                                          failureRedirect: "/static/loginerr.html" }));
+                                          failureRedirect: "/static/login.html" }));
 
 app.set("view engine", "pug");
 app.get("/welcome.html", function(req, res) {
     if (!req.user) {
+        // TODO check if the request has been authorized by the shoe device.
+        if (req.session.clientToken) {
+            var user = shoe_manager.get_device_user_if_authenticated(req.session.clientToken);
+            if (user)
+                return req.login(user,function(err) {
+                    if (err) return console.log(err);
+                    return res.redirect("/welcome.html");
+                });
+        }
         return res.redirect("/static/login.html");
     }
     var user = req.user;
+    if (req.session.clientToken) {
+        // Notify the shoe_manager that the user successfully logged in
+        //   (this will associate the user with the shoe device if there is one)
+        shoe_manager.set_user(req.session.clientToken,user);
+    }
     res.render("welcome", {user: user.username});
 });
 
@@ -122,7 +136,7 @@ app.get("/request_challenge", function(req, res) {
 
   function userMustEnterPassword() {
     socket_manager.tellUserMustEnterPassword(token);
-    res.send("");
+    res.send("the user must log in manually");
   };
 
   function sendChallenge(permChallenge, tempChallenge) {
@@ -130,7 +144,8 @@ app.get("/request_challenge", function(req, res) {
   };
 
   function badDevice(){
-    // TODO (low priority)
+      // TODO (low priority)
+      res.send("the device was bad");
   };
 
   var uid = req.query.uid;
@@ -139,33 +154,39 @@ app.get("/request_challenge", function(req, res) {
   var password_cb = userMustEnterPassword;
   var challenge_cb = sendChallenge;
   var failure_cb = badDevice;
-  shoe_manager.request_challenge( uid, perm_pk, temp_pk, password_cb , challenge_cb, failure_cb );
+    shoe_manager.request_challenge(token, uid, perm_pk, temp_pk, password_cb , challenge_cb, failure_cb );
 
 });
 
 
-app.post("/response", function(req, res) {
-  function success() {
-    // TODO log client in
-  }
+app.get("/response", function(req, res) {
+    console.log("route /response was contacted with token: " + req.query.token);
 
-  function failure() {
-    // TODO (low priority) tell the browser user they failed
-  }
+    function success() {
+        socket_manager.logUserIn(req.query.token);
+        res.send("authorization succeeded!");
+    }
 
-  var success_cb = success;
-  var failure_cb = failure;
-  var uid = req.query.uid;
-  var perm_response = req.query.perm_response;
-  var temp_response = req.query.temp_response;
+    function failure() {
+        // TODO (low priority) tell the browser user they failed
+        console.log("The device failed to provide the correct response.");
+        res.send("authorization failed.");
+    }
 
+    var success_cb = success;
+    var failure_cb = failure;
+    var uid = req.query.uid;
+    var perm_response = req.query.perm_response;
+    var temp_response = req.query.temp_response;
 
-  shoe_manager.check_response(uid, perm_response, temp_response, success_cb, failure_cb)
+    shoe_manager.check_response(uid, perm_response, temp_response, success_cb, failure_cb);
 });
 
-app.post("/shoeDisconnected", function(req,res) {
-    socket_manager.forceUserToLogOut(res.query.token);
-    req.logout();
+app.get("/shoeDisconnected", function(req,res) {
+    let token = req.query.token;
+    console.log("route /shoeDisconnected was contacted with token: " + token);
+    socket_manager.forceUserToLogOut(token);
+    res.send("the shoe has been disconnected."); //empty response
 });
 
 

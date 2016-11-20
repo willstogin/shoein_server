@@ -3,8 +3,17 @@
 var express = require('express');
 var app = express();
 var httpServer = require('http').Server(app);
+//set up statically available pages
 app.use('/static', express.static("./static"));
+app.use('/dynamic', express.static("./dynamic"));
 
+
+//be able to parse body (for use in forms)
+var bodyParser = require('body-parser');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded());
+
+//crypto
 var bcrypt = require('bcrypt');
 
 //session
@@ -23,6 +32,10 @@ function siomw(f) { return function(socket,next){f(socket.request, socket.reques
 sio.use(siomw(session_middleware));
 
 
+//for dynamic content
+var fileSystem = require('fs');
+const pug = require('pug');
+
 
 // Our imports
 var shoe_manager = require('./shoe_manager');
@@ -40,7 +53,7 @@ class User {
   }
 }
 
-var list_of_user_sessions = [];
+var list_of_users = [];
 
 
 
@@ -51,6 +64,27 @@ var list_of_user_sessions = [];
 
 app.get("/", function(req, res) {
   res.send('<div>hello world</div>');
+});
+
+app.post("/signup", function(req, res) {
+  console.log(req.body);
+  var username = req.body.username;
+  var password = req.body.password;
+
+  var user = new User(username, password, req.query.token)
+  list_of_users.push(user);
+
+  const compiledWelcome =  pug.compileFile('templates/welcome.pug');
+  console.log("writing to /dynamic/welcome.html with currentUser " + user.name);
+  fileSystem.writeFile( __dirname + '/dynamic/welcome.html', compiledWelcome({user: user.name}), (err) => {
+    console.log(err)
+  });
+
+  res.redirect("/dynamic/welcome.html");
+});
+
+app.post("/logout", function(req, res) {
+
 });
 
 
@@ -113,8 +147,6 @@ app.get("/newSession/:token", function(req, res) {
   res.redirect("/static/login.html");
 
 });
-
-
 
 
 

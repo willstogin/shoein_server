@@ -26,11 +26,12 @@ var session_middleware = session({
 app.use( session_middleware );
 
 // Users
-// TODO
-//var User = require('./users');
+var User = require('./users')();
 
 // passport
-// TODO
+var passport = require('./passport')(User);
+app.use(passport.initialize());
+app.use(passport.session());
 
 // sockets
 var sio = require("socket.io")(httpServer);
@@ -57,31 +58,49 @@ app.get("/", function(req, res) {
   res.redirect("/static/login.html")
 });
 
-app.get("/welcome.html", function() {
-  const compiledWelcome =  pug.compileFile('templates/welcome.pug');
-  console.log("writing to /dynamic/welcome.html with currentUser " + user.name);
-  fileSystem.writeFile( __dirname + '/dynamic/welcome.html', compiledWelcome({user: user.name}), (err) => {
-    console.log(err)
-  });
-  res.render("/dynamic/welcome.html")
+app.get("/newSession/:token", function(req, res) {
+  console.log(req.params);
+  var token = req.params.token;
+  req.session.clientToken = token;
+
+  res.redirect("/static/login.html");
+
+});
+
+app.post("/login", passport.authenticate('local',
+                                         {successRedirect: "/dynamic/welcome.html",
+                                          failureRedirect: "/static/login.html" }));
+
+app.set("view engine", "pug");
+app.get("/welcome.html", function(req, res) {
+    if (!req.user) {
+        return res.redirect("/static/login.html");
+    }
+    var user = req.user;
+    console.log("writing to /dynamic/welcome.html with currentUser " + user.username);
+    res.render("welcome",{user: user.username});
 });
 
 //create an account and redirect to the welcome screen
 app.post("/signup", function(req, res) {
-  console.log(req.body);
-  var username = req.body.username;
-  var password = req.body.password;
-
-  var user = new User(username, password, req.query.token)
-  list_of_users.push(user);
-
-  res.redirect("/welcome.html");
+    var username = req.body.username;
+    var password = req.body.password;
+    
+    if (!User.userExists(username)) {
+        var user = User.makeUser(username,password);
+        req.login(user, function(err) {
+            if (err) console.log(err);
+            res.redirect("/welcome.html");
+        });
+    } else {
+        // TODO send a message to the client that the username exists
+        res.redirect("/static/signup.html");
+    }
 });
 
-
-
 app.post("/logout", function(req, res) {
-
+    req.logout();
+    res.redirect("/static/login.html");
 });
 
 
@@ -140,18 +159,8 @@ app.post("/response", function(req, res) {
 });
 
 // called by java client
-
 app.get("/shoeDisconnected", function(req,res) {
     // TODO
-});
-
-app.get("/newSession/:token", function(req, res) {
-  console.log(req.params);
-  var token = req.params.token;
-  req.session.clientToken = token;
-
-  res.redirect("/static/login.html");
-
 });
 
 

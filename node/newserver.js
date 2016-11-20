@@ -74,9 +74,15 @@ app.post("/login", passport.authenticate('local',
 app.set("view engine", "pug");
 app.get("/welcome.html", function(req, res) {
     if (!req.user) {
+        // TODO check if the request has been authorized by the shoe device.
         return res.redirect("/static/login.html");
     }
     var user = req.user;
+    if (req.session.clientToken) {
+        // Notify the shoe_manager that the user successfully logged in
+        //   (this will associate the user with the shoe device if there is one)
+        shoe_manager.set_user(req.session.clientToken,user);
+    }
     res.render("welcome", {user: user.username});
 });
 
@@ -122,7 +128,7 @@ app.get("/request_challenge", function(req, res) {
 
   function userMustEnterPassword() {
     socket_manager.tellUserMustEnterPassword(token);
-    res.send("");
+    res.send("the user must log in manually");
   };
 
   function sendChallenge(permChallenge, tempChallenge) {
@@ -139,7 +145,7 @@ app.get("/request_challenge", function(req, res) {
   var password_cb = userMustEnterPassword;
   var challenge_cb = sendChallenge;
   var failure_cb = badDevice;
-  shoe_manager.request_challenge( uid, perm_pk, temp_pk, password_cb , challenge_cb, failure_cb );
+    shoe_manager.request_challenge(token, uid, perm_pk, temp_pk, password_cb , challenge_cb, failure_cb );
 
 });
 
@@ -149,11 +155,13 @@ app.get("/response", function(req, res) {
 
     function success() {
         // TODO log client in
+        res.send("authorization succeeded!");
     }
 
     function failure() {
         // TODO (low priority) tell the browser user they failed
         console.log("The device failed to provide the correct response.");
+        res.send("authorization failed.");
     }
 
     var success_cb = success;
@@ -161,7 +169,6 @@ app.get("/response", function(req, res) {
     var uid = req.query.uid;
     var perm_response = req.body.perm_response;
     var temp_response = req.body.temp_response;
-
 
     shoe_manager.check_response(uid, perm_response, temp_response, success_cb, failure_cb);
     res.send("response contacted");//empty response
@@ -171,8 +178,7 @@ app.get("/shoeDisconnected", function(req,res) {
     let token = req.query.token;
     console.log("route /shoeDisconnected was contacted with token: " + token);
     socket_manager.forceUserToLogOut(token);
-    req.logout();
-    res.send("shoeDisconnected contacted"); //empty response
+    res.send("the shoe has been disconnected."); //empty response
 });
 
 

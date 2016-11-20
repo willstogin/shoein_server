@@ -14,6 +14,7 @@ function ShoeDevice(uid,perm_pk,temp_pk) {
 }
 
 var shoeDevices = {};
+var token_to_uid_map = {};
 
 module.exports = {
     
@@ -27,7 +28,8 @@ module.exports = {
       + failure_cb(err) // called when perm_pk does not match
       +   serve error (device not recognized)
     */
-    request_challenge: function(uid,perm_pk,temp_pk,password_cb,challenge_cb,failure_cb) {
+    request_challenge: function(token,uid,perm_pk,temp_pk,password_cb,challenge_cb,failure_cb) {
+        token_to_uid_map[token] = uid;
         if (uid in shoeDevices) {
             // The device has connected before.
             var shoeDevice = shoeDevices[uid];
@@ -70,11 +72,22 @@ module.exports = {
             failure_cb();
         }
     },
+
+    shoe_disconnected: function(token) {
+        token_to_uid_map[token] = null;
+    },
     
     
     // Identifies a shoe (specified by uid) with a user
-    set_user: function(uid,user) {
-        
+    set_user: function(token,user) {
+        if (token in token_to_uid_map) {
+            var uid = token_to_uid_map[token];
+            if (uid in shoeDevices) {
+                var shoeDevice = shoeDevices[uid];
+                if (shoeDevice)
+                    shoeDevice.user = user;
+            }
+        }
     },
     
 };

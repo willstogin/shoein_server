@@ -112,20 +112,14 @@ void sendByteBuffer(String s) {
 
 /* *************************** CONNECTION HANDLER **************************** */
 void onShoeConnect() {
-  sendByteBuffer(REQUEST_ID_MESSAGE);
   sendByteBuffer("butts");
 
-  sendByteBuffer(REQUEST_TMPKEY_KEY);
   sendByteBuffer("tmpkey");
 
-  sendByteBuffer(REQUEST_PERMKEY_KEY);
   sendByteBuffer("permkey");
-  
-  // Request a challenge
-  sendByteBuffer(REQUEST_CHALLENGE_MESSAGE);
 
   // Await a response
-  char buffer[80];
+  byte buffer[80];
   getByteBuffer(buffer, 80);
   Serial.println(String((char*)buffer));
 }

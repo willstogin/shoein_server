@@ -145,12 +145,14 @@ app.get("/request_challenge", function(req, res) {
 
 
 app.post("/response", function(req, res) {
-  function success() {
+    function success(user) {
+        
     // TODO log client in
   }
 
   function failure() {
-    // TODO (low priority) tell the browser user they failed
+      // TODO (low priority) tell the browser user they failed
+      console.log("The device failed to provide the correct response.");
   }
 
   var success_cb = success;

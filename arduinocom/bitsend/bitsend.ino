@@ -5,7 +5,7 @@ int outClock = 10;
 int outPin = 11;
 int connIn = 12;
 int connOut = 13;
-char SHOE = 0;
+char SHOE = 1;
 byte x = 42;
 
 const int uniqueID = 1337;
@@ -13,6 +13,7 @@ byte permanentKeyPair[80];
 byte tempKeyPair[80];
 
 const String REQUEST_CHALLENGE_MESSAGE = "I would like a challenge, thank you.";
+const String REQUEST_ID_MESSAGE = "ID";
 
 
 void setup() {
@@ -72,7 +73,6 @@ byte getByte() {
     accumulator = getBit(accumulator);
     if (!connected) return -1;
    }
-   Serial.println((char)accumulator);
   return accumulator;
 }
 
@@ -108,7 +108,7 @@ void sendByteBuffer(String s) {
 
 /* *************************** CONNECTION HANDLER **************************** */
 void onShoeConnect() {
-  // Provide id, temp and perm keys
+  sendByteBuffer(REQUEST_ID_MESSAGE);
   
   // Request a challenge
   sendByteBuffer(REQUEST_CHALLENGE_MESSAGE);
@@ -121,7 +121,6 @@ void onShoeConnect() {
 }
 
 void onMatConnect() {
-  Serial.println("asdfasdf");
   byte request[80];
   getByteBuffer(request, 80);
   Serial.println(String((char*)request));
@@ -163,9 +162,10 @@ void shoeLoop() {
         Serial.println("Not connected...");
         updateConnection();
       }
-      onShoeConnect();
+
       Serial.println("Connected... delaying");
       delay(5000);
+      onShoeConnect();
   }
 }
 

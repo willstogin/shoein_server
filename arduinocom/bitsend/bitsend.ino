@@ -1,3 +1,5 @@
+#include <string.h>;
+
 bool connected = false;
 int inClock = 8;
 int inPin = 9;
@@ -121,8 +123,13 @@ void onShoeConnect() {
 }
 
 void onMatConnect() {
-  Serial.println("asdfasdf");
   byte request[80];
+  getByteBuffer(request, 80);
+  byte id[80];
+  strcpy((char*)id, (char*)request); 
+  
+  Serial.println(String((char*)));
+  
   getByteBuffer(request, 80);
   Serial.println(String((char*)request));
   if (String((char*)request) == REQUEST_CHALLENGE_MESSAGE) {

@@ -29,7 +29,9 @@ app.use( session_middleware );
 var User = require('./users')();
 
 // passport
-// TODO
+var passport = require('./passport')(User);
+app.use(passport.initialize());
+app.use(passport.session());
 
 // sockets
 var sio = require("socket.io")(httpServer);
@@ -56,14 +58,35 @@ app.get("/", function(req, res) {
   res.redirect("/static/login.html")
 });
 
+app.get("/newSession/:token", function(req, res) {
+  console.log(req.params);
+  var token = req.params.token;
+  req.session.clientToken = token;
+
+  res.redirect("/static/login.html");
+
+});
+
+app.post("/login", passport.authenticate('local',
+                                         {successRedirect: "/dynamic/welcome.html",
+                                          failureRedirect: "/static/login.html" }));
+
+app.set("view engine", "pug");
 app.get("/welcome.html", function(req, res) {
+    if (!req.user) {
+        return res.redirect("/static/login.html");
+    }
     var user = req.user;
     const compiledWelcome =  pug.compileFile('templates/welcome.pug');
-    console.log("writing to /dynamic/welcome.html with currentUser " + user.name);
+    console.log("writing to /dynamic/welcome.html with currentUser " + user.username);
+    // TODO CLEANUP delete unnecessary files
+    /*
     fileSystem.writeFile( __dirname + '/dynamic/welcome.html', compiledWelcome({user: user.username}), (err) => {
         console.log(err)
     });
     res.render("/dynamic/welcome.html")
+    */
+    res.render("welcome",{user: user.username});
 });
 
 //create an account and redirect to the welcome screen
@@ -79,7 +102,7 @@ app.post("/signup", function(req, res) {
         });
     } else {
         // TODO send a message to the client that the username exists
-        res.send("");
+        res.redirect("/static/signup.html");
     }
 });
 
@@ -144,18 +167,8 @@ app.post("/response", function(req, res) {
 });
 
 // called by java client
-
 app.get("/shoeDisconnected", function(req,res) {
     // TODO
-});
-
-app.get("/newSession/:token", function(req, res) {
-  console.log(req.params);
-  var token = req.params.token;
-  req.session.clientToken = token;
-
-  res.redirect("/static/login.html");
-
 });
 
 

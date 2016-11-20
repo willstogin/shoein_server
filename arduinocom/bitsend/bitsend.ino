@@ -8,6 +8,7 @@ int connOut = 13;
 char SHOE = 0;
 byte x = 42;
 
+
 void setup() {
   // put your setup code here, to run once:
   //i made a change
@@ -63,9 +64,8 @@ byte getByte() {
   byte accumulator = '\0';
   for (int i=0; i<8; i++) {
     accumulator = getBit(accumulator);
-    Serial.println(accumulator);
     if (!connected) return -1;
-  }
+   }
   return accumulator;
 }
 

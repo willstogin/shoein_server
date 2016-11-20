@@ -144,30 +144,35 @@ app.get("/request_challenge", function(req, res) {
 });
 
 
-app.post("/response", function(req, res) {
-    function success(user) {
-        
-    // TODO log client in
-  }
+app.get("/response", function(req, res) {
+    console.log("route /response was contacted with token: " + req.query.token);
 
-  function failure() {
-      // TODO (low priority) tell the browser user they failed
-      console.log("The device failed to provide the correct response.");
-  }
+    function success() {
+        // TODO log client in
+    }
 
-  var success_cb = success;
-  var failure_cb = failure;
-  var uid = req.query.uid;
-  var perm_response = req.query.perm_response;
-  var temp_response = req.query.temp_response;
+    function failure() {
+        // TODO (low priority) tell the browser user they failed
+        console.log("The device failed to provide the correct response.");
+    }
+
+    var success_cb = success;
+    var failure_cb = failure;
+    var uid = req.query.uid;
+    var perm_response = req.body.perm_response;
+    var temp_response = req.body.temp_response;
 
 
-  shoe_manager.check_response(uid, perm_response, temp_response, success_cb, failure_cb)
+    shoe_manager.check_response(uid, perm_response, temp_response, success_cb, failure_cb);
+    res.send("response contacted");//empty response
 });
 
-app.post("/shoeDisconnected", function(req,res) {
-    socket_manager.forceUserToLogOut(res.query.token);
+app.get("/shoeDisconnected", function(req,res) {
+    let token = req.query.token;
+    console.log("route /shoeDisconnected was contacted with token: " + token);
+    socket_manager.forceUserToLogOut(token);
     req.logout();
+    res.send("shoeDisconnected contacted"); //empty response
 });
 
 

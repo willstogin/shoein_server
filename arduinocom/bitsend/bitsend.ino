@@ -1,4 +1,4 @@
-#include <string.h>;
+#include <string.h>
 
 
 bool connected = false;
@@ -8,16 +8,15 @@ int outClock = 10;
 int outPin = 11;
 int connIn = 12;
 int connOut = 13;
-char SHOE = 0;
+char SHOE = 1;
 byte x = 42;
 
 const int uniqueID = 1337;
 byte permanentKeyPair[80];
 byte tempKeyPair[80];
 
-const String REQUEST_CHALLENGE_MESSAGE = "I would like a challenge, thank you.";
+const String REQUEST_CHALLENGE_MESSAGE = "I would like a challenge, thank you.";<<<<<<< HEAD
 const String REQUEST_ID_MESSAGE = "ID";
-
 
 void setup() {
   // put your setup code here, to run once:

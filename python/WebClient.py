@@ -18,21 +18,24 @@ def requestChallenge(uid,perm_pk,temp_pk):
     print "Requesting challenge."
     url = "{0}/request_challenge?uid={1}&perm_pk={2}&temp_pk={3}&token={4}".format(baseUrl,uid,perm_pk,temp_pk,myToken)
     res = urllib2.urlopen(url).read()
-    print res
+    print "FROM SERVER".format(res)
     if (',' in res):
         (permChallenge,tempChallenge) = res.split(',')
+    else:
+        permChallenge = ""
+        tempChallenge = ""
 
 def sendResponse(uid,perm_response,temp_response):
     print "Sending response."
     url = "{0}/response?uid={1}&perm_response={2}&temp_response={3}&token={4}".format(baseUrl,uid,perm_response,temp_response,myToken)
     res = urllib2.urlopen(url).read()
-    print res
+    print "FROM SERVER: {0}".format(res)
 
 def logout():
     print "Logging out"
     url = "{0}/shoeDisconnected?token={1}".format(baseUrl,myToken)
     res = urllib2.urlopen(url).read()
-    print res
+    print "FROM SERVER: {0}".format(res)
 
 if __name__=="__main__":
     connect()

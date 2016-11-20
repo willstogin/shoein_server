@@ -62,15 +62,14 @@ public class WebClient {
     public void requestChallenge(String uid, String perm_pk, String temp_pk) {
         System.out.println("Requesting challenge");
 
-
-
         try {
           StringBuilder result = new StringBuilder();
-          String urlString =  new String(this.baseUrl + "request_challenge"+
-          "?uid="+uid+
-          "&perm_pk="+perm_pk+
-          "&temp_pk="+temp_pk+
-          "&token="+this.myToken);
+          String urlString =  new String(
+              this.baseUrl + "request_challenge"+
+              "?uid="+uid+
+              "&perm_pk="+perm_pk+
+              "&temp_pk="+temp_pk+
+              "&token="+this.myToken);
 
           URL url = new URL(urlString);
           HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -85,17 +84,38 @@ public class WebClient {
           System.out.println(result.toString());
         } catch (Exception e) {
           System.out.println(e);
-
         }
-
-
-        // TODO
     }
 
     // Send the response to the challenge from the server
-    public void sendResponse() {
+    public void sendResponse(String uid, String perm_response, String temp_response) {
         System.out.println("Sending response.");
-        // TODO
+
+        try {
+          StringBuilder result = new StringBuilder();
+          String urlString =  new String(
+              this.baseUrl + "response"+
+              "?uid="+uid+
+              "&perm_response="+perm_response+
+              "&temp_response="+temp_response+
+              "&token="+this.myToken);
+
+          URL url = new URL(urlString);
+          HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+          conn.setRequestMethod("POST");
+
+          BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+          String line;
+          while ((line = rd.readLine()) != null) {
+             result.append(line);
+          }
+          rd.close();
+          System.out.println(result.toString());
+        } catch (Exception e) {
+          System.out.println(e);
+        }
+
+
     }
 
     // Log the user out when the device is disconnected

@@ -5,7 +5,7 @@ int outClock = 10;
 int outPin = 11;
 int connIn = 12;
 int connOut = 13;
-char SHOE = 1;
+char SHOE = 0;
 byte x = 42;
 
 const int uniqueID = 1337;
@@ -121,6 +121,35 @@ void onShoeConnect() {
 
 void onMatConnect() {
   byte request[80];
+  String ID;
+  String tempKey;
+  String permKey;
+  //shoe sends REQUEST_ID_KEY
+  if(String((char*) request) == REQUEST_ID_KEY) {
+    getByteBuffer(request, 80);
+    ID = String((char*) request); //Gets and saves the request should be ID
+  }
+  
+  if(String((char*) request) == REQUEST_TMPKEY_KEY) {
+    getByteBuffer(request, 80);
+    tempKey = String((char*) request); //Gets and saves the request should be tempKey
+  }
+  
+  if(String((char*) request) == REQUEST_PERMKEY_KEY) {
+    getByteBuffer(request, 80);
+    permKey = String((char*) request); //Gets and saves the request should be permKey
+  }
+  Serial.print("ID is: ");
+  Serial.println(ID);
+
+  Serial.print("Temp Key is: ");
+  Serial.println(tempKey);
+
+  Serial.print("Perm Key is: ");
+  Serial.println(permKey);
+  
+  //send to server at some point
+
   getByteBuffer(request, 80);
   Serial.println(String((char*)request));
   if (String((char*)request) == REQUEST_CHALLENGE_MESSAGE) {
@@ -145,6 +174,7 @@ void matLoop() {
       updateConnection();
       Serial.println("Not connected...");
     }
+    onMatConnect();
   }
 }
 

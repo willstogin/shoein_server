@@ -140,7 +140,8 @@ app.post("/response", function(req, res) {
 });
 
 // called by java client
-app.get("/shoeDisconnected"), function(req,res) {
+
+app.get("/shoeDisconnected", function(req,res) {
     // TODO
 });
 

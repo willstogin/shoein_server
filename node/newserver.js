@@ -54,9 +54,19 @@ var socket_manager = require('./socket_manager')(sio);
 
 
 app.get("/", function(req, res) {
-  res.send('<div>hello world</div>');
+  res.redirect("/static/login.html")
 });
 
+app.get("/welcome.html", function() {
+  const compiledWelcome =  pug.compileFile('templates/welcome.pug');
+  console.log("writing to /dynamic/welcome.html with currentUser " + user.name);
+  fileSystem.writeFile( __dirname + '/dynamic/welcome.html', compiledWelcome({user: user.name}), (err) => {
+    console.log(err)
+  });
+  res.render("/dynamic/welcome.html")
+});
+
+//create an account and redirect to the welcome screen
 app.post("/signup", function(req, res) {
   console.log(req.body);
   var username = req.body.username;
@@ -65,14 +75,10 @@ app.post("/signup", function(req, res) {
   var user = new User(username, password, req.query.token)
   list_of_users.push(user);
 
-  const compiledWelcome =  pug.compileFile('templates/welcome.pug');
-  console.log("writing to /dynamic/welcome.html with currentUser " + user.name);
-  fileSystem.writeFile( __dirname + '/dynamic/welcome.html', compiledWelcome({user: user.name}), (err) => {
-    console.log(err)
-  });
-
-  res.redirect("/dynamic/welcome.html");
+  res.redirect("/welcome.html");
 });
+
+
 
 app.post("/logout", function(req, res) {
 
@@ -98,7 +104,7 @@ app.post("/request_challenge", function(req, res) {
   function sendChallenge(permChallenge, tempChallenge) {
       res.send(""+permChallenge+","+tempChallenge);
   };
-    
+
   function badDevice(){
     // TODO (low priority)
   };
@@ -135,7 +141,7 @@ app.post("/response", function(req, res) {
 
 // called by java client
 app.get("/shoeDisconnected"), function(req,res) {
-    // TODO 
+    // TODO
 });
 
 app.get("/newSession/:token", function(req, res) {

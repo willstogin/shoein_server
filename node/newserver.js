@@ -116,7 +116,7 @@ app.get("/newClient", function(req, res) {
 });
 
 
-app.post("/request_challenge", function(req, res) {
+app.get("/request_challenge", function(req, res) {
   var token = req.query.token;
   console.log("route /request_challenge was contacted with token: " + token);
 
@@ -163,9 +163,11 @@ app.post("/response", function(req, res) {
   shoe_manager.check_response(uid, perm_response, temp_response, success_cb, failure_cb)
 });
 
-app.get("/shoeDisconnected", function(req,res) {
-    // TODO
+app.post("/shoeDisconnected", function(req,res) {
+    socket_manager.forceUserToLogOut(res.query.token);
+    req.logout();
 });
+
 
 
 

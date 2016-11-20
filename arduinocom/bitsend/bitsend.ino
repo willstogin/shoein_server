@@ -30,7 +30,7 @@ void loop() {
 }
 /* ************************* CHECKING FOR A CONNECTION *********************** */
 
-bool updateConnection {
+bool updateConnection() {
    connected = (digitalRead(connIn) == HIGH);
 }
 

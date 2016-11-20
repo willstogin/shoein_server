@@ -15,7 +15,7 @@ byte permanentKeyPair[80];
 byte tempKeyPair[80];
 
 const String REQUEST_CHALLENGE_MESSAGE = "I would like a challenge, thank you.";
-const String REQUEST_ID_KEY = "ID";
+const String REQUEST_ID_MESSAGE = "ID";
 const String REQUEST_TMPKEY_KEY = "tempKey";
 const String REQUEST_PERMKEY_KEY = "permKey";
 
@@ -113,15 +113,20 @@ void sendByteBuffer(String s) {
 void onShoeConnect() {
   sendByteBuffer(REQUEST_ID_MESSAGE);
   sendByteBuffer("butts");
+
+  sendByteBuffer(REQUEST_TMPKEY_KEY);
+  sendByteBuffer("tmpkey");
+
+  sendByteBuffer(REQUEST_PERMKEY_KEY);
+  sendByteBuffer("permkey");
   
   // Request a challenge
   sendByteBuffer(REQUEST_CHALLENGE_MESSAGE);
 
-//  byte challenge[80];
-//  getByteBuffer
-  
-  // Hand ID and two keys over
-  // Wait for a response
+  // Await a response
+  char buffer[80];
+  getByteBuffer(buffer, 80);
+  Serial.println(String((char*)buffer));
 }
 
 void onMatConnect() {
@@ -129,8 +134,8 @@ void onMatConnect() {
   byte ID[80];
   byte tempKey[80];
   byte permKey[80];
-  //shoe sends REQUEST_ID_KEY
-  if(String((char*) request) == REQUEST_ID_KEY) {
+  //shoe sends REQUEST_ID_MESSAGE
+  if(String((char*) request) == REQUEST_ID_MESSAGE) {
     Serial.println("ID key recognized");
     getByteBuffer(request, 80);
     strcpy((char*)ID, (char*)request); //Gets and saves the request should be ID

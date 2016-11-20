@@ -8,7 +8,7 @@ int outClock = 10;
 int outPin = 11;
 int connIn = 12;
 int connOut = 13;
-char SHOE = 0;
+char SHOE = 1;
 byte x = 42;
 
 const int uniqueID = 1337;
@@ -62,7 +62,7 @@ byte getBit(byte b) {
 
 // Consumes the leftmost bit and returns the resulting char
 byte sendBit(byte b) {
-  int delay = 100000; // 100 corresponds to 9600 baud
+  int delay = 10000; // 100 corresponds to 9600 baud
   digitalWrite(outClock, HIGH);
   digitalWrite(outPin, ((b & 0x80) ? HIGH : LOW));
   delayMicroseconds(delay/2); 
@@ -118,6 +118,7 @@ void onShoeConnect() {
 
   sendByteBuffer("permkey");
 
+  sendByteBuffer("\n");
   // Await a response
   byte buffer[80];
   getByteBuffer(buffer, 80);

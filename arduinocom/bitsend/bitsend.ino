@@ -7,7 +7,7 @@ int outClock = 10;
 int outPin = 11;
 int connIn = 12;
 int connOut = 13;
-char SHOE = 1;
+char SHOE = 0;
 byte x = 42;
 
 const int uniqueID = 1337;
@@ -77,6 +77,7 @@ byte getByte() {
     accumulator = getBit(accumulator);
     if (!connected) return -1;
    }
+   Serial.println((char)accumulator);
   return accumulator;
 }
 
@@ -132,6 +133,7 @@ void onShoeConnect() {
 }
 
 void onMatConnect() {
+  Serial.println("asdfasdf");
   byte request[80];
   byte ID[80];
   byte tempKey[80];

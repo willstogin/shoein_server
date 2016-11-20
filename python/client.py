@@ -24,7 +24,9 @@ def readline():
     return parts[0][:-1]
 
 def sendline(line):
+    print bytearray(line,"UTF-8")
     ser.write(bytearray(line,"UTF-8"))
+#    ser.write(bytearray(1)) # sends a byte array of length 1 with a zero
 #    for b in bytearray(line,"UTF-8"):
 #        ser.write(b)
 
@@ -40,7 +42,7 @@ def event_loop():
             temp_pk = readline()
             if (shoe_uid[0]!='a' or perm_pk[0]!='a' or temp_pk[0]!='a'):
                 print "got garbage"
-                sendline("discard");
+                sendline("discard")
             else:
                 print "request challenge: {0} {1} {2}".format(shoe_uid,perm_pk,temp_pk)
                 webclient.requestChallenge(shoe_uid,perm_pk,temp_pk)
@@ -50,9 +52,12 @@ def event_loop():
                 else:
                     sendline("discard")
         elif (line=="send response"):
-            perm_response = readline()
-            temp_response = readline()
-            print "send response: {0} {1} {2}".format(shoe_uid,perm_pk,temp_pk)
+            #perm_response = readline()
+            #temp_response = readline()
+            # cheating a little here...
+            perm_response = webclient.permChallenge
+            temp_response = webclient.tempChallenge
+            print "send response: '{0}' '{1}' '{2}'".format(shoe_uid,perm_response,temp_response)
             webclient.sendResponse(shoe_uid,perm_response,temp_response)
         elif (line=="shoe disconnected"):
             shoe_uid = "ERROR"

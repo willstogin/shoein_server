@@ -77,15 +77,7 @@ app.get("/welcome.html", function(req, res) {
         return res.redirect("/static/login.html");
     }
     var user = req.user;
-    const compiledWelcome =  pug.compileFile('templates/welcome.pug');
     console.log("writing to /dynamic/welcome.html with currentUser " + user.username);
-    // TODO CLEANUP delete unnecessary files
-    /*
-    fileSystem.writeFile( __dirname + '/dynamic/welcome.html', compiledWelcome({user: user.username}), (err) => {
-        console.log(err)
-    });
-    res.render("/dynamic/welcome.html")
-    */
     res.render("welcome",{user: user.username});
 });
 

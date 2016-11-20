@@ -68,8 +68,8 @@ app.get("/newSession/:token", function(req, res) {
 });
 
 app.post("/login", passport.authenticate('local',
-                                         {successRedirect: "/dynamic/welcome.html",
-                                          failureRedirect: "/static/login.html" }));
+                                         {successRedirect: "/welcome.html",
+                                          failureRedirect: "/static/loginerr.html" }));
 
 app.set("view engine", "pug");
 app.get("/welcome.html", function(req, res) {
@@ -77,8 +77,7 @@ app.get("/welcome.html", function(req, res) {
         return res.redirect("/static/login.html");
     }
     var user = req.user;
-    console.log("writing to /dynamic/welcome.html with currentUser " + user.username);
-    res.render("welcome",{user: user.username});
+    res.render("welcome", {user: user.username});
 });
 
 //create an account and redirect to the welcome screen
@@ -93,8 +92,7 @@ app.post("/signup", function(req, res) {
             res.redirect("/welcome.html");
         });
     } else {
-        // TODO send a message to the client that the username exists
-        
+        socket_manager.tellUserAccountIsTaken(req.query.token); //not sure if this works
         res.redirect("/static/signup.html");
     }
 });

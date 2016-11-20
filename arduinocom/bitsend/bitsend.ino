@@ -29,28 +29,6 @@ void loop() {
   }
 }
 
-/* ************************** LOOP FOR MAT ******************************** */
-void matLoop() {
-  if (connected) {
-    byte b = getByte();
-    Serial.println("B is: " + b);
-    connected = (digitalRead(connIn) == HIGH);
-  } else {
-    while(!connected) connected = (digitalRead(connIn) == HIGH);
-  }
-}
-
-/* ********************* LOOP FOR SHOE ************************************ */
-void shoeLoop() {
-    if (connected) {
-      sendByte(x);
-      connected = (digitalRead(connIn) == HIGH);    
-    } else {
-      while(!connected) { connected = (digitalRead(connIn) == HIGH);}
-      delay(5000);
-  }
-}
-
 /* ********************* SENDING AND RECEIVING BITS AND BYTES  *************** */
 // Reads the pin and writes the bit to the rightmost bit of char, returning result
 byte getBit(byte b) {
@@ -84,3 +62,34 @@ void sendByte(byte b) {
     toSend = sendBit(toSend);
   }
 }
+
+/* ************************** LOOP FOR MAT ******************************** */
+void matLoop() {
+  if (connected) {
+    byte b = getByte();
+    Serial.println("B is: " + b);
+    connected = (digitalRead(connIn) == HIGH);
+  } else {
+    while(!connected) connected = (digitalRead(connIn) == HIGH);
+  }
+}
+
+/* ********************* LOOP FOR SHOE ************************************ */
+void shoeLoop() {
+    if (connected) {
+      sendByte(x);
+      Serial.println("Sending...");
+      connected = (digitalRead(connIn) == HIGH);    
+    } else {
+      Serial.println("Going from connected to not.");
+      delay(10);
+      while(!connected) { 
+        Serial.println("Not connected...");
+        connected = (digitalRead(connIn) == HIGH);
+      }
+      Serial.println("Connected... delaying");
+      delay(5000);
+  }
+}
+
+

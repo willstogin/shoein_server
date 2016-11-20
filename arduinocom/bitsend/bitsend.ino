@@ -7,7 +7,7 @@ int outClock = 10;
 int outPin = 11;
 int connIn = 12;
 int connOut = 13;
-char SHOE = 0;
+char SHOE = 1;
 byte x = 42;
 
 const int uniqueID = 1337;
@@ -18,7 +18,6 @@ const String REQUEST_CHALLENGE_MESSAGE = "I would like a challenge, thank you.";
 const String REQUEST_ID_KEY = "ID";
 const String REQUEST_TMPKEY_KEY = "tempKey";
 const String REQUEST_PERMKEY_KEY = "permKey";
-
 
 void setup() {
   // put your setup code here, to run once:
@@ -77,7 +76,6 @@ byte getByte() {
     accumulator = getBit(accumulator);
     if (!connected) return -1;
    }
-   Serial.println((char)accumulator);
   return accumulator;
 }
 
@@ -113,14 +111,8 @@ void sendByteBuffer(String s) {
 
 /* *************************** CONNECTION HANDLER **************************** */
 void onShoeConnect() {
-  // Provide id, temp and perm keys
-  sendByteBuffer(REQUEST_ID_KEY);
-  sendByteBuffer("my id!");
-  sendByteBuffer(REQUEST_TMPKEY_KEY);
-  sendByteBuffer("my temp key!");
-  sendByteBuffer(REQUEST_PERMKEY_KEY);
-  sendByteBuffer("my perm key!");
-  
+  sendByteBuffer(REQUEST_ID_MESSAGE);
+  sendByteBuffer("butts");
   
   // Request a challenge
   sendByteBuffer(REQUEST_CHALLENGE_MESSAGE);
@@ -133,7 +125,6 @@ void onShoeConnect() {
 }
 
 void onMatConnect() {
-  Serial.println("asdfasdf");
   byte request[80];
   byte ID[80];
   byte tempKey[80];
@@ -167,6 +158,15 @@ void onMatConnect() {
   
   //send to server at some point
 
+  getByteBuffer(request, 80);
+  byte id[80];
+  if (String((char*)request) == REQUEST_ID_MESSAGE) {  
+    Serial.print("requested id\n");
+    getByteBuffer(id, 80);
+    strcpy((char*)id, (char*)request);       
+    Serial.println(String((char*)id));
+   
+  }
   getByteBuffer(request, 80);
   Serial.println(String((char*)request));
   if (String((char*)request) == REQUEST_CHALLENGE_MESSAGE) {

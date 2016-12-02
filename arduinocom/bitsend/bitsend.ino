@@ -1,24 +1,32 @@
 #include <string.h>
 
-
+bool wasDark = false;
 bool connected = false;
+int lightPin = 0;
 int inClock = 8;
 int inPin = 9;
 int outClock = 10;
 int outPin = 11;
 int connIn = 12;
 int connOut = 13;
-char SHOE = 0;
+char SHOE = 1;
 byte x = 42;
 
 const int uniqueID = 1337;
 byte permanentKeyPair[80];
-byte tempKeyPair[80];
+int tempKey = 0;
 
 const String REQUEST_CHALLENGE_MESSAGE = "I would like a challenge, thank you.";
 const String REQUEST_ID_MESSAGE = "ID";
 const String REQUEST_TMPKEY_KEY = "tempKey";
 const String REQUEST_PERMKEY_KEY = "permKey";
+
+void checkLight() {
+  bool isLight = analogRead(lightPin) > 1000;
+  if (wasDark && isLight)
+    tempKey++;
+   wasDark = !isLight;
+}
 
 void setup() {
   // put your setup code here, to run once:
@@ -117,7 +125,10 @@ void sendByteBuffer(String s) {
 void onShoeConnect() {
   sendByteBuffer("abutts");
 
-  sendByteBuffer("atmpkey");
+  String tmp = "a";
+  tmp.concat(tempKey);
+  sendByteBuffer(tmp);
+  
 
   sendByteBuffer("apermkey");
 
@@ -194,6 +205,7 @@ void shoeLoop() {
       Serial.println("Connected... delaying");
       delay(2000);
       onShoeConnect();
+      checkLight();
   }
 }
 
